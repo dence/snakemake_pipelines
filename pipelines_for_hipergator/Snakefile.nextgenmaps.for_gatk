@@ -1,0 +1,134 @@
+rule all:
+	input:
+		"gatk_UG.nextgenmap_alignments_Pnigra.report.html"
+
+rule bwa_map:
+	input:
+		"/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
+		"/ufrc/kirst/share/Pnigra_Sempervirens/raw/{sample}/{sample}_R2_reverse_paired.trim.fq.gz",
+		"/ufrc/kirst/share/Pnigra_Sempervirens/raw/{sample}/{sample}_R1_forward_paired.trim.fq.gz",
+	output:
+		temp("nextgenmap_alignments_Pnigra/mapped_reads/{sample}.nextgenmap.bam")
+	params:
+		rg="@RG\tID:{sample}\tSM:{sample}"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/bwa_mem/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.bwa.benchmark.txt"
+	threads: 4
+	shell:
+		"module load bwa; bwa mem -R '{params.rg}' -t {threads} {input} | samtools view -Sb > {output}"
+
+rule samtools_sort:
+	input:
+		"nextgenmap_alignments_Pnigra/mapped_reads/{sample}.bam"
+	output:
+		"nextgenmap_alignments_Pnigra/sorted_reads/{sample}.sorted.bam"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/samtools_sort/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.sort.benchmark.txt"
+	shell:
+		"module load samtools; samtools sort -T nextgenmap_alignments_Pnigra/sorted_reads/{wildcards.sample} -O bam {input} > {output}"
+
+rule samtools_rmdup:
+	input:
+		"nextgenmap_alignments_Pnigra/sorted_reads/{sample}.sorted.bam"
+	output:
+		"nextgenmap_alignments_Pnigra/rmduped_reads/{sample}.sorted.rmdup.bam"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/samtools_rmdup/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.rmdup.benchmark.txt"
+	shell:
+		"module load samtools; samtools rmdup {input} {output}"
+
+rule samtools_index_sorted:
+	input:
+		"nextgenmap_alignments_Pnigra/rmduped_reads/{sample}.sorted.rmdup.bam"
+	output:
+		"nextgenmap_alignments_Pnigra/rmduped_reads/{sample}.sorted.rmdup.bam.bai"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/samtools_index_sorted/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.index_sorted.benchmark.txt"	
+	shell:
+		"module load samtools; samtool index {input}"
+
+rule samtools_index_realigned:
+	input:
+		"nextgenmap_alignments_Pnigra/indel_realigned/{sample}.sorted.rmdup.realigned.bam"
+	output:
+		"nextgenmap_alignments_Pnigra/indel_realigned/{sample}.sorted.rmdup.realigned.bam.bai"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/samtools_index_realigned/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.index_realigned.benchmark.txt"
+	shell:
+		"module load samtools; samtools index {input}"
+
+rule gatk_indel_create:
+	input:
+		ref="/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
+		bam="nextgenmap_alignments_Pnigra/rmduped_reads/{sample}.sorted.rmdup.bam"
+	output:
+		"nextgenmap_alignments_Pnigra/indel_target_regions/{sample}.interval"
+	log:
+		"logs/nextgenmap_alignments_Pnigra/gatk_indel_create/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.gatk_indel_create.benchmark.txt"
+	shell:
+		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output}"
+
+rule gatk_indel_realign:
+	input:
+		ref="/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
+		bam="nextgenmap_alignments_Pnigra/rmduped_reads/{sample}.sorted.rmdup.bam",
+		interval="nextgenmap_alignments_Pnigra/indel_target_regions/{sample}.interval"
+	output:
+		"nextgenmap_alignments_Pnigra/indel_realigned/{sample}.sorted.rmdup.realigned.bam"
+	threads: 4
+	log:
+		"logs/nextgenmap_alignments_Pnigra/gatk_indel_realign/{sample}.log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/{sample}.gatk_indel_realign.benchmark.txt"
+	shell:
+		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T IndelRealigner -R {input.ref} -nt {threads} -I {input.bam} -targetIntervals {input.interval} -o {output} "
+
+rule gatk_unified_genotyper:
+	input:
+		"/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
+		bam=expand("nextgenmap_alignments_Pnigra/indel_realigned/{sample}.sorted.rmdup.realigned.bam", sample=config["samples"]),
+		bai=expand("nextgenmap_alignments_Pnigra/indel_realigned/{sample}.sorted.rmdup.realigned.bam.bai", sample=config["samples"])	
+	output:
+		"calls/nextgenmap_alignments_Pnigra/all_samples.P.nigra.gatk_UG.vcf"
+	threads: 4
+	log:
+		"logs/nextgenmap_alignments_Pnigra/gatk_UG/[wildcards.sample].log"
+	benchmark:
+		"benchmarks/nextgenmap_alignments_Pnigra/[wildcards.sample].gatk_unified_genotyper.benchmark.txt"
+	shell:
+		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T UnifiedGenotyper -R {input.ref} -nt {threads} -I {input.bam} -gt_mode DISCOVERY -out_mode EMIT_VARIANTS_ONLY --genotype_likelihoods_model BOTH -o {output} "
+
+rule report:
+	input:
+		T1="calls/nextgenmap_alignments_Pnigra/all_samples.P.nigra.gatk_UG.vcf",
+		T2=expand("benchmarks/nextgenmap_alignments_Pnigra/{sample}.bwa.benchmark.txt",sample=config["samples"])
+	output:
+		"gatk_UG.nextgenmap_alignments_Pnigra.report.html"
+	run:
+		from snakemake.utils import report
+		with open(input.T1) as vcf:
+			n_calls = sum(1 for l in vcf if not l.startswith("#"))
+
+		report("""
+		A first test of a structural variant calling workflow
+		=====================================================
+		
+		Reads were mapped to the P.nigra
+		reference genome and variants were called jointly with
+		gatk unified genotyper.
+
+		This resulted in {n_calls} variants (see Table T1_).
+		Benchmark results for BWA can be found in the tables T2_.
+		""", output[0], T1=input[0])
