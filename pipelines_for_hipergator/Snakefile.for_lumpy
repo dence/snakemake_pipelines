@@ -77,7 +77,7 @@ rule report:
 	input:
 		T1=expand("histos/{sample}.histo", sample=config["samples"]),
 		T2=expand("split_reads/{sample}.splitters.bam", sample=config["samples"]), 
-		T3=expand("discordants/{sample}.discordants.unsorted.bam", sample=config["samples']),
+		T3=expand("discordants/{sample}.discordants.unsorted.bam", sample=config["samples"]),
 		T4=expand("benchmarks/{sample}.bwa.benchmark.txt",sample=config["samples"])
 	output:
 		"lumpy.report.html"
