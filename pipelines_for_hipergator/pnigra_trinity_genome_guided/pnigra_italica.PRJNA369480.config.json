@@ -1,0 +1,49 @@
+{	"accession": ["PRJNA369480"],
+	"layout": ["F"],
+	"samples": {
+		"SRR5320374": ["SRR5320374"],
+		"SRR5320373": ["SRR5320373"],
+		"SRR5320372": ["SRR5320372"],
+		"SRR5320371": ["SRR5320371"],
+		"SRR5320370": ["SRR5320370"],
+		"SRR5320369": ["SRR5320369"],
+		"SRR5320368": ["SRR5320368"],
+		"SRR5320367": ["SRR5320367"],
+		"SRR5320366": ["SRR5320366"],
+		"SRR5320365": ["SRR5320365"],
+		"SRR5320364": ["SRR5320364"],
+		"SRR5320363": ["SRR5320363"],
+		"SRR5320362": ["SRR5320362"],
+		"SRR5320361": ["SRR5320361"],
+		"SRR5320360": ["SRR5320360"],
+		"SRR5320359": ["SRR5320359"],
+		"SRR5320358": ["SRR5320358"],
+		"SRR5320357": ["SRR5320357"],
+		"SRR5320356": ["SRR5320356"],
+		"SRR5320355": ["SRR5320355"],
+		"SRR5320354": ["SRR5320354"],
+		"SRR5320353": ["SRR5320353"],
+		"SRR5320352": ["SRR5320352"],
+		"SRR5320351": ["SRR5320351"],
+		"SRR5320350": ["SRR5320350"],
+		"SRR5320349": ["SRR5320349"],
+		"SRR5320348": ["SRR5320348"],
+		"SRR5320347": ["SRR5320347"],
+		"SRR5320346": ["SRR5320346"],
+		"SRR5320345": ["SRR5320345"],
+		"SRR5320344": ["SRR5320344"],
+		"SRR5320343": ["SRR5320343"]
+	},
+	"reference": {
+		"Pop.trichocarpa": {
+			"v3": ["/ufrc/kirst/d.ence/ref_genomes/populus/ref_genomes/Potr/v3/Ptrichocarpa_v3.0_210.fa"]
+		},
+		"Pop.nigra": {
+			"old": ["/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa"],
+			"supernova_CH": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.fasta"],
+			"supernova_CH_1": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.1.fasta"],
+			"supernova_CH_2": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.2.fasta"],
+			"supernova_PA": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_PA/PA_wildtype_91X_covg.fasta"]
+		}
+	}
+}
