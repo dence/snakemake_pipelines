@@ -2,24 +2,39 @@
 	"__default__": {
 		"time": "24:00:00",
 		"N": "1",
-		"mem": "20gb",
+		"mem": "1gb",
 		"partition": "hpg1-compute",
-		"c": "1"
+		"c": "1",
+		"qos": "kirst-b"
 	},
-	"assemble_superreads" : 
+	"trinity_genome_guided" :
+	{
+		"time": "240:00:00",
+		"N": "1",
+		"c": "10",
+		"mem": "70gb",
+		"qos": "kirst"
+	},
+	"dump_accessions" :
+	{
+		"time": "24:00:00",
+		"mem": "5gb"
+	},
+	"assemble_superreads" :
 	{
 		"mem": "50gb"
 	},
 	"tophat_supereads_align" :
 	{
 		"time": "20:00:00",
-		"mem": "50gb",
+		"mem": "5gb",
 		"c": "20"
 	},
 	"tophat_process_align" :
 	{
 		"mem": "50gb",
-		"c": "20"
+		"c": "20",
+		"time": "48:00:00"
 	},
 	"tophat_raw_align" : 
 	{
@@ -29,48 +44,80 @@
 	"bwa_map" :
 	{
 		"time": "40:00:00",
-		"c": "1"
+		"c": "10"
 	},
-	"bowtie2_map" :
+	"bowtie2_align" :
 	{
 		"time": "40:00:00",
-		"mem": "40gb",
-		"c": "1"
+		"mem": "50gb",
+		"c": "4"
+	},
+	"hisat2_align" :
+	{
+		"time": "20:00:00",
+		"mem": "50gb",
+		"c": "4"
 	},
 	"samtools_sort" :
 	{
 		"time": "40:00:00",
-		"c": "1"
+		"c": "1",
+		"mem": "5gb"
 	},
 	"samtools_rmdup" : 
 	{
-		"time": "150:00:00",
-		"c": "1"
+		"time": "40:00:00",
+		"c": "1",
+		"mem": "5gb"
 	},
 	"samtools_sort_bams" :
 	{
-		"time": "40:00:00"
+		"time": "40:00:00",
+		"mem": "5gb"
 	},
 	"samtools_sort_discordants" :
 	{
-		"time": "40:00:00"
+		"time": "40:00:00",
+		"mem": "5gb"
 	},
 	"samtools_sort_splitters" :
 	{
-		"time": "40:00:00"
+		"time": "40:00:00",
+		"mem": "5gb"
 	},
-	"gatk_indel_create" :
+	"gatk_indel_realign" :
 	{
 		"time": "40:00:00"
 	},
 	"gatk_indel_realign" : 
 	{
-		"time": "40:00:00"
+		"time": "40:00:00",
+		"mem": "5gb"
 	},
 	"freebayes" :
 	{
+		"time": "96:00:00"
+	},
+	"soap_config":
+	{
+		"time": "00:10:00",
+		"c": "1",
+		"mem": "50mb",
+		"qos": "kirst-b"
+	},
+	"soapdenovo":
+	{
 		"time": "40:00:00",
-		"c": "20"
+		"c": "1"
+	},
+	"haplotype_caller_unique_samples":
+	{
+		"time": "72:00:00",
+		"mem": "15gb"
+	},
+	"star_align":
+	{
+		"time": "72:00:00",
+		"mem": "15gb"
 	}
-		
 }
