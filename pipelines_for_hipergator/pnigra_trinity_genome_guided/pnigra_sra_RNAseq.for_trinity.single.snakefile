@@ -49,7 +49,7 @@ rule trim_reads:
 	benchmark:
 		"benchmarks/{sample}.fastqc.benchmark.txt"
 	shell:
-		"module load gcc/5.2.0; module load cutadapt; cutadapt -u -10 -q30,30 --minimum-length=25 -o {output.fq1} {input.fq1} &> {log}"
+		"module load gcc/5.2.0; module load cutadapt; cutadapt -u -10 -q30,30 --minimum-length=25 -o {output[0]} {input[0]} &> {log}"
 rule posttrim_fastqc:
 	input:
 		"trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz"

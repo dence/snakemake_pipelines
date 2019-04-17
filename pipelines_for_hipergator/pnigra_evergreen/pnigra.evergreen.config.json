@@ -1,0 +1,27 @@
+{
+	"samples": {
+			"CH1": ["CH1"],
+			"CH2": ["CH2"],
+			"CH3": ["CH3"],
+			"CH4": ["CH4"],
+			"PA1": ["PA1"],
+			"PA2": ["PA2"],
+			"PA3": ["PA3"],
+			"PA4": ["PA4"]
+},
+	"reference": {
+		"Pop.trichocarpa": {
+			"v3": ["/ufrc/kirst/d.ence/ref_genomes/populus/ref_genomes/Potr/v3/Ptrichocarpa_v3.0_210.fa"]
+		},
+		"Pop.nigra": {
+			"old": ["/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa"],
+			"supernova_CH": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.fasta"],
+			"supernova_CH_1": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.1.fasta"],
+			"supernova_CH_2": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.2.fasta"],
+			"supernova_PA": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_PA/PA_wildtype_91X_covg.fasta"],
+			"supernova_PA_1": ["/ufrc/kirst/share/pnigra_italica_evergreen/stringent_test_alignments/supernova_ref_assembly/supernova_PA/PA_wildtype_91X_covg.1.fasta.gz"],
+			"supernova_PA_2": ["/ufrc/kirst/share/pnigra_italica_evergreen/stringent_test_alignments/supernova_ref_assembly/supernova_PA/PA_wildtype_91X_covg.2.fasta.gz"]
+		}
+	}
+}
+

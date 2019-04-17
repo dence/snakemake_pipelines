@@ -1,6 +1,7 @@
 rule all:
 	input:
 		"freebayes_calls.report.html"
+
 rule pretrim_fastqc:
 	input:
 		#fq1="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
@@ -8,18 +9,18 @@ rule pretrim_fastqc:
 		#fq2="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz"
 		fq2="/orange/kirst/d.ence/pinus_taeda_L/fr1_sequencing/RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz"
 	output:
-		"fastqc_out/pre_process/{sample}/",
-		"logs/fastqc_pre_out/{sample}.log"
+		out="fastqc_out/pre_process/{sample}/",
+		log_file="logs/fastqc_pre_out/{sample}.log"
 	log:
 		"logs/fastqc_pre_out/{sample}.log"
 	benchmark:
 		"benchmarks/{sample}.fastqc.benchmark.txt"
 	shell:
-		"module load fastqc ; fastqc -f fastq -o {output} {input} &> {log}"
+		"module load fastqc ; fastqc -f fastq -o {output.out} {input} &> {log}"
 rule trim_reads:
 	input:
 		fq1="/orange/kirst/d.ence/pinus_taeda_L/fr1_sequencing/RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
-		fq2="/orange/kirst/d.ence/pinus_taeda_L/fr1_sequencing/RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz"
+		fq2="/orange/kirst/d.ence/pinus_taeda_L/fr1_sequencing/RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz",
 		prev_log="logs/fastqc_pre_out/{sample}.log"
 	output:
 		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
@@ -29,7 +30,7 @@ rule trim_reads:
 	benchmark:
 		"benchmarks/{sample}.fastqc.benchmark.txt"
 	shell:
-		"module load cutadapt; cutadapt -u 10 -U 10 -q30,30 --minimum-length=50 -o {output.fq1} -p {output.fq2} {input.fq1} {input.fq2} &> {log}"
+		"module load python/2.7.14; module load gcc/5.2.0; module load cutadapt/1.18; cutadapt -u 10 -U 10 -q30,30 --minimum-length=50 -o {output.fq1} -p {output.fq2} {input.fq1} {input.fq2} &> {log}"
 rule posttrim_fastqc:
 	input:
 		"trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
@@ -43,19 +44,22 @@ rule posttrim_fastqc:
 		"benchmarks/{sample}.fastqc.benchmark.txt"
 	shell:
 		"module load fastqc ; fastqc -f fastq -o {output} {input} &> {log}"
+
 rule bwamem_align:
 	input:
 		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
 		fq2="trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz"
 	params:
-		RG="\"\@RG\tID:{sample}\tSM:{sample}\"",
+		sample="{sample}",
 		ref=config["reference"]["V1_01"]["custom"]
 	output:
 		"mapped_reads/{sample}.bwa_mem.bam"
 	log:
 		"logs/bwa_mem/{sample}.bwa_mem.log"
 	shell:
-		"module load bwa/0.7.17 ; bwa mem {config ref} -R {params.RG} {input.fq1} {input.fq2} > {output} 2> {log}"	
+		"module load bwa/0.7.17 ; bwa mem {params.ref} " 
+		+ "-R '@RG\\tID:{params.sample}\\tSM:{params.sample}\\tPL:{params.sample}'" 
+		+ "{input.fq1} {input.fq2} > {output} 2> {log}"	
 
 rule samtools_sort:
 	input:
@@ -164,10 +168,10 @@ rule freebayes:
 rule merge_lane_bams:
 	input:
 		#making a dumb assumption about the names of the bams to merged. specific to the Fr1 project. DE
-		L4_bam="rmduped_reads/{sample}_L004.bwa_mem.sorted.rmdup.bam",
-		L5_bam="rmduped_reads/{sample}_L005.bwa_mem.sorted.rmdup.bam"
+		L4_bam="rmduped_reads/{sample}_L004.bwa_mem.sorted.rmdup.realigned.bam",
+		L5_bam="rmduped_reads/{sample}_L005.bwa_mem.sorted.rmdup.realignd.bam"
 	output:
-		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
+		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
 	log:
 		"logs/picard_merge_sam_files/{sample}.log"
 	shell:
@@ -195,9 +199,9 @@ rule samtools_index_replaced:
 
 rule ReplaceRG_merged:
 	input:
-		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
+		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
 	output:
-		"RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
+		"RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
 	params:
 		RG_fields="RGID={sample} RGLB={sample} RGPL=illumina RGPU={sample} RGSM={sample}"
 	log:
@@ -207,15 +211,20 @@ rule ReplaceRG_merged:
 
 rule haplotype_caller_unique_samples:
 	input:
-		bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
-		bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",
+		bams=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["samples"]),
+		bais=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bam.merged.bam.bai",sample=config["samples"]),
+		#bams="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
+		#bais="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",
 		#bam="merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam",
 		#bai="merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai",
 		ref=config["reference"]["V1_01"]["custom"]
+	log: 
+		"logs/haplotype_caller/{sample}.log"
 	output:
 		"calls/indv_HaplCalls/{sample}.HC_individual.gvcf"
 	shell:
-		"module load gatk/3.7.0; java -jar $HPC_GATK_DIR/GenomeAnalysisTK.jar -R {input.ref} -T HaplotypeCaller -I {input.bam}  -rf BadCigar -o {output}"
+		"module load gatk/3.7.0; java -jar $HPC_GATK_DIR/GenomeAnalysisTK.jar -R {input.ref} -T HaplotypeCaller  -rf BadCigar {input.bams} -o {output} &> log"
+
 rule combine_GVCFs:
 	input:
 		gvcf=expand("calls/indv_HaplCalls/{sample}.HC_individual.gvcf",sample=config["samples"]),
