@@ -1,9 +1,6 @@
-#SAMPLES = ["CH1","CH2","CH3","CH4","PA1","PA2","PA3","PA4"]
-#SAMPLES = ["CH1"]
-
 rule all:
 	input:
-		"gatk.report.html"
+		"gatk_UG.report.html"
 
 rule bwa_map:
 	input:
@@ -11,9 +8,13 @@ rule bwa_map:
 		"/ufrc/kirst/share/Pnigra_Sempervirens/raw/{sample}/{sample}_R2_reverse_paired.trim.fq.gz",
 		"/ufrc/kirst/share/Pnigra_Sempervirens/raw/{sample}/{sample}_R1_forward_paired.trim.fq.gz",
 	output:
-		temp("mapped_reads/{sample}.bam")
+		"mapped_reads/{sample}.bam"
 	params:
-		rg="@RG\tID:{sample}\tSM:{sample}"
+		rg="@RG ID:{sample} SM:{sample}"
+	log:
+		"logs/bwa_mem/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.bwa.benchmark.txt"
 	threads: 4
 	shell:
 		"module load bwa; bwa mem -R '{params.rg}' -t {threads} {input} | samtools view -Sb > {output}"
@@ -23,22 +24,48 @@ rule samtools_sort:
 		"mapped_reads/{sample}.bam"
 	output:
 		"sorted_reads/{sample}.sorted.bam"
+	log:
+		"logs/samtools_sort/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.sort.benchmark.txt"
+	threads: 4		
 	shell:
-		"module load samtools; samtools sort -T sorted_reads/{wildcards.sample} -O bam {input} > {output}"
+		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{wildcards.sample} -O bam {input} > {output}"
 
 rule samtools_rmdup:
 	input:
 		"sorted_reads/{sample}.sorted.bam"
 	output:
 		"rmduped_reads/{sample}.sorted.rmdup.bam"
+	log:
+		"logs/samtools_rmdup/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.rmdup.benchmark.txt"
 	shell:
 		"module load samtools; samtools rmdup {input} {output}"
 
-rule samtools_index_sorted:
+rule samtools_index_rmduped:
 	input:
 		"rmduped_reads/{sample}.sorted.rmdup.bam"
 	output:
 		"rmduped_reads/{sample}.sorted.rmdup.bam.bai"
+	log:
+		"logs/smatools_index_sorted{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_sorted.benchmark.txt"
+	shell:
+		"module load samtools; samtools index {input}"
+		
+
+rule samtools_index_sorted:
+	input:
+		"sorted_reads/{sample}.sorted.rmdup.bam"
+	output:
+		"sorted_reads/{sample}.sorted.rmdup.bam.bai"
+	log:
+		"logs/samtools_index_sorted/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_sorted.benchmark.txt"	
 	shell:
 		"module load samtools; samtool index {input}"
 
@@ -47,28 +74,41 @@ rule samtools_index_realigned:
 		"indel_realigned/{sample}.sorted.rmdup.realigned.bam"
 	output:
 		"indel_realigned/{sample}.sorted.rmdup.realigned.bam.bai"
+	log:
+		"logs/samtools_index_realigned/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_realigned.benchmark.txt"
 	shell:
 		"module load samtools; samtools index {input}"
 
 rule gatk_indel_create:
 	input:
 		ref="/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
-		bam="rmduped_reads/{sample}.sorted.rmdup.bam"
+		bam="rmduped_reads/{sample}.sorted.rmdup.bam",
+		index="rmduped_reads/{sample}.sorted.rmdup.bam.bai"
 	output:
-		"indel_target_regions/{sample}.interval"
+		"indel_target_regions/{sample}.intervals"
+	log:
+		"logs/gatk_indel_create/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.gatk_indel_create.benchmark.txt"
 	shell:
-		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output}"
+		"module load gatk; export _JAVA_OPTIONS=\"-Xmx100g\"; GenomeAnalysisTK -T RealignerTargetCreator -R {input.ref} -I {input.bam} -o {output}"
 
 rule gatk_indel_realign:
 	input:
 		ref="/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa",
 		bam="rmduped_reads/{sample}.sorted.rmdup.bam",
-		interval="indel_target_regions/{sample}.interval"
+		interval="indel_target_regions/{sample}.intervals"
 	output:
 		"indel_realigned/{sample}.sorted.rmdup.realigned.bam"
 	threads: 4
+	log:
+		"logs/gatk_indel_realign/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.gatk_indel_realign.benchmark.txt"
 	shell:
-		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T IndelRealigner -R {input.ref} -nt {threads} -I {input.bam} -targetIntervals {input.interval} -o {output} "
+		"module load gatk; export _JAVA_OPTIONS=\"-Xmx100g\"; GenomeAnalysisTK -T IndelRealigner -R {input.ref} -I {input.bam} -targetIntervals {input.interval} -o {output} "
 
 rule gatk_unified_genotyper:
 	input:
@@ -78,17 +118,22 @@ rule gatk_unified_genotyper:
 	output:
 		"calls/all_samples.P.nigra.gatk_UG.vcf"
 	threads: 4
+	log:
+		"logs/gatk_UG/[wildcards.sample].log"
+	benchmark:
+		"benchmarks/[wildcards.sample].gatk_unified_genotyper.benchmark.txt"
 	shell:
-		"module load gatk; export_JAVA_OPTIONS=\"-Xmx4g\"; GenomeAnalysisTK -T UnifiedGenotyper -R {input.ref} -nt {threads} -I {input.bam} -gt_mode DISCOVERY -out_mode EMIT_VARIANTS_ONLY --genotype_likelihoods_model BOTH -o {output} "
+		"module load gatk; export _JAVA_OPTIONS=\"-Xmx100g\"; GenomeAnalysisTK -T UnifiedGenotyper -R {input.ref} -nt {threads} -I {input.bam} -gt_mode DISCOVERY -out_mode EMIT_VARIANTS_ONLY --genotype_likelihoods_model BOTH -o {output} "
 
 rule report:
 	input:
-		"calls/all_samples.P.nigra.gatk_UG.vcf"
+		T1="calls/all_samples.P.nigra.gatk_UG.vcf",
+		T2=expand("benchmarks/{sample}.bwa.benchmark.txt",sample=config["samples"])
 	output:
-		"gatk.report.html"
+		"gatk_UG.report.html"
 	run:
 		from snakemake.utils import report
-		with open(input[0]) as vcf:
+		with open(input.T1) as vcf:
 			n_calls = sum(1 for l in vcf if not l.startswith("#"))
 
 		report("""
@@ -99,5 +144,6 @@ rule report:
 		reference genome and variants were called jointly with
 		gatk unified genotyper.
 
-		This resulted in <dummy> variants (see Table T1_).
+		This resulted in {n_calls} variants (see Table T1_).
+		Benchmark results for BWA can be found in the tables T2_.
 		""", output[0], T1=input[0])

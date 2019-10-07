@@ -3,8 +3,10 @@ rule all:
 		"freebayes_calls.report.html"
 rule pretrim_fastqc:
 	input:
-		fq1="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
-		fq2="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz"
+		#fq1="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_V1_1/test.{sample}.R1.fastq",
+                #fq2="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_V1_1/test.{sample}.R2.fastq"
+		#fq1="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
+		#fq2="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz"
                 #"/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/test.{sample}.R1.fastq",
                 #"/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/test.{sample}.R2.fastq"
                 #"/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/{sample}-Run02_S5_L001_R1_001.fastq.gz",        
@@ -20,8 +22,10 @@ rule pretrim_fastqc:
 		"module load fastqc ; fastqc -f fastq -o {output} {input} &> {log}"
 rule trim_reads:
 	input:
-		fq1="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
-		fq2="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz",
+		#fq1="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_V1_1/test.{sample}.R1.fastq",
+		#fq2="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_V1_1/test.{sample}.R2.fastq",
+		#fq1="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R1_001.fastq.gz",
+		#fq2="/ufrc/kirst/d.ence/pinus_taeda_L/fr1_sequencing//RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz",
                 #fq1="/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/test.{sample}.R1.fastq",
                 #fq2="/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/test.{sample}.R2.fastq",
                 #fq1="/ufrc/kirst/d.ence/pinus_taeda_L/wegrzyn_elite_transcriptome_raw_data/{sample}-Run02_S5_L001_R1_001.fastq.gz",    
@@ -49,7 +53,24 @@ rule posttrim_fastqc:
 		"benchmarks/{sample}.fastqc.benchmark.txt"
 	shell:
 		"module load fastqc ; fastqc -f fastq -o {output} {input} &> {log}"
-rule bowtie2_map:
+
+rule hisat2_align:
+	input:
+		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
+		fq2="trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz"
+	output:
+		"mapped_reads/{sample}.hisat2.bam"
+	log:
+		"logs/hisat2/{sample}.log"
+	params:
+		rg="-p 20 --rg-id={sample} --rg \"SM:{sample}\" --rg \"LIB:{sample}\" --rg \"PL:illumina\"",
+		ref=config["reference"]["V1_01"]["full"]
+	benchmark:
+		"benchmarks/{sample}.hisat2.benchmark.txt"
+	shell:
+		"module load hisat2; module load samtools; hisat2 -p 4 --mm --time --summary-file -x {params.ref} {params.rg} -1 {input.fq1} -2 {input.fq2} | samtools view -bS - > {output}"
+
+rule bowtie2_align:
 	input:
 		ref=config["reference"]["V1_01"]["full"],
 		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
@@ -74,9 +95,9 @@ rule bowtie2_map:
 
 rule samtools_sort:
 	input:
-		"mapped_reads/{sample}.bowtie2.bam"
+		"mapped_reads/{sample}.hisat2.bam"
 	output:
-		"sorted_reads/{sample}.bowtie2.sorted.bam"
+		"sorted_reads/{sample}.hisat2.sorted.bam"
 	log:
 		"logs/samtools_sort/{sample}.log"
 	benchmark:
@@ -87,9 +108,9 @@ rule samtools_sort:
 
 rule samtools_rmdup:
 	input:
-		"sorted_reads/{sample}.bowtie2.sorted.bam"
+		"sorted_reads/{sample}.hisat2.sorted.bam"
 	output:
-		"rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam"
+		"rmduped_reads/{sample}.hisat2.sorted.rmdup.bam"
 	log:
 		"logs/samtools_rmdup/{sample}.log"
 	benchmark:
@@ -99,11 +120,11 @@ rule samtools_rmdup:
 
 rule samtools_index_rmduped:
 	input:
-		"rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam"
+		"rmduped_reads/{sample}.hisat2.sorted.rmdup.bam"
 	output:
-		"rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam.bai"
+		"rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai"
 	log:
-		"logs/smatools_index_sorted{sample}.log"
+		"logs/samtools_index_sorted.{sample}.log"
 	benchmark:
 		"benchmarks/{sample}.index_sorted.benchmark.txt"
 	shell:
@@ -111,9 +132,9 @@ rule samtools_index_rmduped:
 
 rule samtools_index_sorted:
 	input:
-		"sorted_reads/{sample}.bowtie2.sorted.rmdup.bam"
+		"sorted_reads/{sample}.hisat2.sorted.rmdup.bam"
 	output:
-		"sorted_reads/{sample}.bowtie2.sorted.rmdup.bam.bai"
+		"sorted_reads/{sample}.hisat2.sorted.rmdup.bam.bai"
 	log:
 		"logs/samtools_index_sorted/{sample}.log"
 	benchmark:
@@ -122,9 +143,9 @@ rule samtools_index_sorted:
 		"module load samtools; samtool index {input}"
 rule gatk_indel_creator:
         input:
-                "rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam"
+                "rmduped_reads/{sample}.hisat2.sorted.rmdup.bam"
         output:
-                "realigner_intervals/{sample}.bowtie2.intervals"
+                "realigner_intervals/{sample}.hisat2.intervals"
         params:
                 ref=config["reference"]["V1_01"]["full"]
         log:
@@ -135,10 +156,10 @@ rule gatk_indel_creator:
                 "module load gatk;  java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator -I {input} -o {output} -R {params.ref}"
 rule gatk_indel_realign:
         input:
-                bam="rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam",
-                interval="realigner_intervals/{sample}.bowtie2.intervals"
+                bam="rmduped_reads/{sample}.hisat2.sorted.rmdup.bam",
+                interval="realigner_intervals/{sample}.hisat2.intervals"
         output:
-                "realigned_bams/{sample}.bowtie2.sorted.rmdup.realigned.bam"
+                "realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bam"
         params:
                 ref=config["reference"]["V1_01"]["full"]
         log:
@@ -149,9 +170,9 @@ rule gatk_indel_realign:
                 "module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output}"
 rule samtools_index_realigned:
         input:
-                "realigned_bams/{sample}.bowtie2.sorted.rmdup.realigned.bam"
+                "realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bam"
         output:
-                "realigned_bams/{sample}.bowtie2.sorted.rmdup.realigned.bam.bai"
+                "realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bai"
         log:
                 "logs/samtools_index_realigned/{sample}.log"
         benchmark:
@@ -162,12 +183,12 @@ rule samtools_index_realigned:
 rule freebayes:
         input:
                 ref=config["reference"]["V1_01"]["full"],
-                #bam=expand("realigned_bams/{sample}.bowtie2.sorted.rmdup.realigned.bam",sample=config["samples"])
-                #bai=expand("realigned_bams/{sample}.bowtie2.sorted.rmdup.realigned.bai",sample=config["samples"])
-                bam=expand("rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam",sample=config["samples"]),
-                bai=expand("rmduped_reads/{sample}.bowtie2.sorted.rmdup.bam.bai",sample=config["samples"])
+                #bam=expand("realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bam",sample=config["samples"]),
+                #bai=expand("realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bai",sample=config["samples"])
+                bam=expand("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam",sample=config["samples"]),
+                bai=expand("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai",sample=config["samples"])
         output:
-                "calls/all_samples.P.nigra.bowtie2.freebayes_populations.vcf"
+                "calls/all_samples.hisat2.freebayes_populations.vcf"
         threads: 20
         log:
                 "logs/freebayes/all_samples.log"
@@ -176,10 +197,54 @@ rule freebayes:
         shell:
                 "module load freebayes; freebayes -f {input.ref} {input.bam} > {output} 2> freebayes.error"
 
+rule merge_lane_bams:
+	input:
+		#making a dumb assumption about the names of the bams to merged. specific to the Fr1 project. DE
+		L4_bam="rmduped_reads/{sample}_L004.hisat2.sorted.rmdup.bam",
+		L5_bam="rmduped_reads/{sample}_L005.hisat2.sorted.rmdup.bam"
+	output:
+		"merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	log:
+		"logs/picard_merge_sam_files/{sample}.log"
+	shell:
+		"module load picard; java -jar $HPC_PICARD_DIR/picard.jar Merge_SamFiles I={input.L4_bam} I={input.L5_bam} O={output} &> {log}"
+
+rule samtools_index_replaced:
+	input:
+		"merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	output:
+		"merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai"
+	log:
+		"logs/samtools_index_realigned/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_realigned.benchmark.txt"
+	shell:
+		"module load samtools; samtools index {input}"
+
+rule ReplaceRG_merged:
+	input:
+		"merge_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	output:
+		"RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	log:
+		"logs/picard_replaceRG/{sample}.log"
+	shell:
+		"module load picard; java -jar $HPC_PICARD_DIR/picard.jar AddOrReplaceReadGroups I={input} O=RG_replaced_bams/{output} RGID={sample} RGLB={sample} RGPL=illumina RGPU={sample} RGSM={sample} &> {log}"
+
+rule haplotype_caller_unique_samples:
+	input:
+		bam="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam",
+		bai="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai",
+		ref=config["reference"]["V1_01"]["full"]
+	output:
+		"calls/indv_HaplCalls/{sample}.HC_individual.gvcf"
+	shell:
+		"module load gatk; java -jar $HPC_GATK_DIR/GenomeAnalysisTK.jar -R {input.ref} -T HaplotypeCaller -I {input.bam} -o {output}"
+
 rule report:
 	input:
-		T1="calls/all_samples.P.nigra.bowtie2.freebayes_populations.vcf",
-		T2=expand("benchmarks/{sample}.bowtie2.benchmark.txt",sample=config["samples"])
+		T1="calls/all_samples.hisat2.freebayes_populations.vcf",
+		T2=expand("benchmarks/{sample}.hisat2.benchmark.txt",sample=config["samples"])
 	output:
 		"freebayes_calls.report.html"
 	run:
@@ -198,3 +263,6 @@ rule report:
 		This resulted in {n_calls} variants (see Table T1_).
 		Benchmark results for BWA can be found in the tables T2_.
 		""", output[0], T1=input[0])
+
+
+

@@ -111,7 +111,8 @@ rule samtools_index_sorted:
 		"module load samtools; samtool index {input}"
 rule gatk_indel_creator:
 	input:
-		"rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam"
+		bam="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam",
+		bai="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai"
 	output:
 		"realigner_intervals/{sample}.bwa_mem.intervals"
 	params:
@@ -121,10 +122,11 @@ rule gatk_indel_creator:
 	benchmark:
 		"benchmarks/{sample}.intervals.benchmark.txt"
 	shell:
-		"module load gatk;  java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator -I {input} -o {output} -R {params.ref}"
+		"module load gatk;  java -jar -Xmx10g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator -I {input.bam} -o {output} -R {params.ref}"
 rule gatk_indel_realign:
 	input:
 		bam="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam",
+		bai="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai",
 		interval="realigner_intervals/{sample}.bwa_mem.intervals"
 	output:
 		"realigned_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bam"
@@ -168,8 +170,8 @@ rule freebayes:
 rule merge_lane_bams:
 	input:
 		#making a dumb assumption about the names of the bams to merged. specific to the Fr1 project. DE
-		L4_bam="rmduped_reads/{sample}_L004.bwa_mem.sorted.rmdup.realigned.bam",
-		L5_bam="rmduped_reads/{sample}_L005.bwa_mem.sorted.rmdup.realignd.bam"
+		L4_bam="realigned_bams/{sample}_L004.bwa_mem.sorted.rmdup.realigned.bam",
+		L5_bam="realigned_bams/{sample}_L005.bwa_mem.sorted.rmdup.realigned.bam"
 	output:
 		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
 	log:
@@ -212,7 +214,7 @@ rule ReplaceRG_merged:
 rule haplotype_caller_unique_samples:
 	input:
 		bams=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["samples"]),
-		bais=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bam.merged.bam.bai",sample=config["samples"]),
+		#bais=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",sample=config["samples"]),
 		#bams="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
 		#bais="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",
 		#bam="merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam",

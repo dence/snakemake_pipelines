@@ -41,9 +41,10 @@
 		"mem": "50gb",
 		"c": "20"
 	},
-	"bwa_map" :
+	"bwamem_align" :
 	{
 		"time": "40:00:00",
+		"mem": "5gb",
 		"c": "10"
 	},
 	"bowtie2_align" :
@@ -85,9 +86,10 @@
 		"time": "40:00:00",
 		"mem": "5gb"
 	},
-	"gatk_indel_realign" :
+	"gatk_indel_creator" :
 	{
-		"time": "40:00:00"
+		"time": "40:00:00",
+		"mem": "10gb"
 	},
 	"gatk_indel_realign" : 
 	{
@@ -113,11 +115,25 @@
 	"haplotype_caller_unique_samples":
 	{
 		"time": "72:00:00",
-		"mem": "15gb"
+		"mem": "20gb"
 	},
 	"star_align":
 	{
 		"time": "72:00:00",
 		"mem": "15gb"
-	}
+	},
+	"merge_lane_bams":
+	{
+		"time": "24:00:00",
+		"mem": "20gb"
+	},
+	"ReplaceRG_merged":
+	{
+		"mem": "5gb"
+	},
+	"merge_bams":
+	{
+		"time": "24:00:00",
+		"mem": "20gb"
+	}	
 }

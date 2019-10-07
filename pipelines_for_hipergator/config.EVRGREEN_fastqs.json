@@ -8,5 +8,11 @@
 		"PA2": ["PA2"],
 		"PA3": ["PA3"],
 		"PA4": ["PA4"]
+	},
+	"ref": {
+		"V3": {
+			"full": ["/ufrc/kirst/d.ence/ref_genomes/populus/ref_genomes/Potr/v3/Ptrichocarpa_v3.0_210.fa"] 
+		},
+		"nigra": ["/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa"]
 	}	
 }

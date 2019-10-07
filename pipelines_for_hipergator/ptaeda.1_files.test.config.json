@@ -5,8 +5,8 @@
 	"reference": {
 		"V1_01": {
 			"dir": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/"],
-			"base": ["ptaeda.v1.01.fa.masked.longer_than3k.fasta"],
-			"full": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/ptaeda.v1.01.fa.masked.longer_than3k.fasta"]
+			"base": ["ptaeda.v1.01.fa.masked.longer_than3k.fasta.fa"],
+			"full": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/ptaeda.v1.01.fa.masked.longer_than3k.fasta.fa"]
 		}
 	},
 	"conf_template": "/home/d.ence/projects/pinus_taeda_L/aligning_elite_transcriptomes_with_stringtie/sr_config_template.txt",
