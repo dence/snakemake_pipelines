@@ -322,7 +322,7 @@ rule report:
 		megs_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.vcf",
 		prog_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf",
 		non_10_5_indv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.vcf",
-		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.vcf"
+		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.vcf",
 		mosdepth_files="mosdepth/{sample}.summary.txt"
 	output:
 		"freebayes_calls.report.html"
