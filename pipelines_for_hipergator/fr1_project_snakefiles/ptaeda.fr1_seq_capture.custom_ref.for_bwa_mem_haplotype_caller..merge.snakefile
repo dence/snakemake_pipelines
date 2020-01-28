@@ -292,18 +292,113 @@ rule merge_freebayes_non_10_5_pooled_singles:
 		"module load vcftools; vcf-merge -d --ref-for-missing 0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0 {input.bgzipped_vcf} > {output.vcf} 2> {log}"
 
 rule mosdepth:
-	input: bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",
+	input:
+		bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",
 		bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",
 		ref=config["reference"]["V1_01"]["custom"]
 	params:
 		" --fast-mode -b /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed --no-per-base {sample}"
 	output:
-		summary="mosdepth/{sample}.mosdepth.summary.txt"
+		"mosdepth/{sample}.mosdepth.summary.txt"
 	log:
 		"logs/mosdepth/{sample}.mosdepth.log"
 	shell:
 		"time mosdepth {params} {input.bam} "	
 
+rule compile_non_10_5_pooled_mosdepth_report:
+	input:
+		non_10_5_pooled_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["non_10_5_pooled"]),
+		non_10_5_pooled_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_pooled.txt"
+	output:
+		"mosdepth/non_10_5_pooled.mosdepth.report.txt"
+	run:
+		all_sample = open(output,'w')
+		open_list = open(non_10_5_pooled_list,'r')
+		for l in open_list:
+			short_sample_ID = l.split('/')[10].split('_i')[0]
+			long_sample_ID = l.split('/')[10].split('.')[0]
+			
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
+			tmp = curr_mosdepth.read()
+			for depth_line in curr_mosdepth:
+				new_line = short_sample_ID + "\t10_5_x_4-6664\tpool\t" + depth_line
+				all_sample.write(new_line + "\n")
+		all_sample.close()
+
+rule compile_non_10_5_indv_mosdepth_report:
+	input:
+		non_10_5_indv_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["non_10_5_indv"]),
+		non_10_5_indv_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_indv.txt",
+		non_10_5_pooled_report="mosdepth/non_10_5_pooled.mosdepth.report.txt"
+	output:
+		"mosdepth/non_10_5_indv.mosdepth.report.txt"
+	run:
+		all_sample = open(output,'w')
+		open_list = open(non_10_5_indv_list,'r')
+		for l in open_list:
+			short_sample_ID = l.split('/')[10].split('_i')[0]
+			long_sample_ID = l.split('/')[10].split('.')[0]
+
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
+			tmp = curr_mosdepth.read()
+			for depth_line in curr_mosdepth:
+				GT = ""
+				if(short_sample_ID == "P04_WA08"):
+					GT="CL04"
+				elif(short_sample_ID == "P04_WB08"):
+					GT="CL05"
+				elif(short_sample_ID == "P04_WC08"):
+					GT="PD18"
+				elif(short_sample_ID == "P04_WD08"):
+					GT="PD35"
+				elif(short_sample_ID == "P02_WG07"):
+					GT="20-1010"
+		
+				new_line = short_sample_ID + "\t" + GT + "\tdiploid\t" + depth_line
+				all_sample.write(new_line + "\n")
+		all_sample.close() 
+
+rule compile_10_5_megs_report:
+	input:
+		megs_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["Fr1_meg_samples"]),
+		megs_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls_bam_list.megs.txt",
+		non_10_5_pooled_report="mosdepth/non_10_5_indv.mosdepth.report.txt"
+	output:
+		"mosdepth/10_5_megs.mosdepth.report.txt"
+	run:
+		all_sample = open(output,'w')
+		open_list = open(megs_list,'r')
+		for l in open_list:
+			short_sample_ID = l.split('/')[10].split('_i')[0]
+			long_sample_ID = l.split('/')[10].split('.')[0]
+
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
+			tmp = curr_mosdepth.read()
+
+			new_line = short_sample_ID + "\t10_5\thaploid\t" + depth_line
+			all_samples.write(new_line + "\n")
+		all_sample.close()
+
+rule compile_10_5_prog_report:
+	input:
+		prog_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["Fr1_prog_samples"]),
+		prog_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.txt",
+		megs_report="mosdepth/10_5_megs.mosdepth.report.txt"
+	output:
+		"mosdepth/10_5_prog.mosdepth.report.txt"
+	run:
+		all_sample = open(output,'w')
+		open_list = open(10_5_prog_list,'r')
+		for l in open_list:
+			short_sample_ID = l.split('/')[10].split('_i')[0]
+			long_sample_ID = l.split('/')[10].split('.')[0]
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
+			tmp = curr_mosdepth.read()
+			
+			new_line = short_sample_ID + "\t10_5xunknown\tdiploid\t" + depth_line
+			all_samples.write(new_line + "\n")
+		all_sample.close()
+		 
 #rule freebayes_non_10_5_pooled:
 #        input:
 #                bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["non_10_5_pooled"]),
@@ -323,7 +418,7 @@ rule report:
 		prog_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf",
 		non_10_5_indv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.vcf",
 		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.vcf",
-		mosdepth_files="mosdepth/{sample}.summary.txt"
+		mosdepth_files="mosdepth/non_10_5_pooled.mosdepth.report.txt"
 	output:
 		"freebayes_calls.report.html"
 	run:
