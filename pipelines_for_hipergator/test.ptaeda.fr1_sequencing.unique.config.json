@@ -1,0 +1,23 @@
+{
+	"samples": {		
+		"P01_WA01_i5-508_i7-59_S758": ["P01_WA01_i5-508_i7-59_S758"],
+		"P01_WA02_i5-508_i7-27_S759": ["P01_WA02_i5-508_i7-27_S759"],
+		"P04_WH11_i5-511_i7-95_S1091": ["P04_WH11_i5-511_i7-95_S1091"]
+},
+"reference": {
+                "V1_01": {
+                        "dir": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/"],
+                        "base": ["ptaeda.v1.01.fa.masked.longer_than3k.fasta.fa"],
+                        "full": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/ptaeda.v1.01.fa.masked.longer_than3k.fasta.fa"]
+                },
+		"V2_1_3K": {
+			"dir": ["/ufrc/kirst/d.ence/ref_genomes/loblolly_pine/V2_1/greater_than_3k"],
+			"base": ["Lp.v2.01.greater_than_3k.fasta"],
+			"full": ["/ufrc/kirst/d.ence/ref_genomes/loblolly_pine/V2_1/greater_than_3k/Lp.v2.01.greater_than_3k.fasta"]
+			
+		}
+        },
+        "conf_template": "/home/d.ence/projects/pinus_taeda_L/aligning_elite_transcriptomes_with_stringtie/sr_config_template.txt",
+        "script_base": "/home/d.ence/applications/snakemake_pipelines/pipelines_for_hipergator"
+}
+

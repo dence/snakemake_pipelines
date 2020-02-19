@@ -1,0 +1,9 @@
+{
+	"samples": {
+		"WA02": ["WA02"]
+	},
+	"reference": {
+		"V1_01": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/ptaeda.v1.01.fa.masked.longer_than3k.fasta"],
+		"V2_01": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V2_1/Lp.v2.01.fasta"]
+	}
+}

@@ -1,0 +1,22 @@
+{	"samples_dir": ["/home/d.ence/d.ence_peter_share/pinus_taeda_L/reanalysis_old_RNAseq/old_RNAseq_reads/old_RNAseq_reads/"],
+	"samples": {
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_001"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_002"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_003"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_004"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_005"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_006"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_007"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_008"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_009"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_010"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_011"],
+		"Sample_UF_Derv_001": ["Sample_UF_Derv_012"]
+	},
+	"index": {
+		"t3352": {
+			"kallisto": ["/home/d.ence/d.ence_peter_share/pinus_taeda_L/miami_ohio_ESTs_ptaeda_rbh/t3352.cdna.v1.contig.kallisto"]
+		}
+		}
+	}
+}

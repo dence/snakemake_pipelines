@@ -1,0 +1,30 @@
+{
+	"samples": {
+		"WA02": ["WA02"],
+		"WA03": ["WA03"],
+		"WA04": ["WA04"],
+		"WA05": ["WA05"],
+		"WA06": ["WA06"],
+		"WA07": ["WA07"],
+		"WA08": ["WA08"],
+		"WA09": ["WA09"],
+		"WA10": ["WA10"],
+		"WA11": ["WA11"],
+		"WA12": ["WA12"],
+		"WB01": ["WB01"],
+		"WB02": ["WB02"],
+		"WB03": ["WB03"],
+		"WB04": ["WB04"],
+		"WB05": ["WB05"],
+		"WB06": ["WB06"],
+		"WB07": ["WB07"],
+		"WB08": ["WB08"],
+		"WB10": ["WB10"],
+		"WB11": ["WB11"],
+		"WB12": ["WB12"],
+		"WC01": ["WC01"]
+	},
+	"reference": {
+		"V1_01": ["/home/d.ence/projects/ref_genomes/loblolly_pine/V1_1/greater_than_3k_ref/ptaeda.v1.01.fa.masked.longer_than3k.fasta"]
+	}
+}

@@ -1,0 +1,70 @@
+{
+	"__default__": {
+		"time": "4:00:00",
+		"N": "1",
+		"mem": "20gb",
+		"partition": "hpg1-compute",
+		"c": "1"
+	},
+	"assemble_superreads" : 
+	{
+		"mem": "50gb"
+	},
+	"tophat_supereads_align" :
+	{
+		"time": "20:00:00",
+		"mem": "50gb",
+		"c": "20"
+	},
+	"tophat_raw_align" : 
+	{
+		"mem": "50gb",
+		"c": "20"
+	},
+	"bwa_map" :
+	{
+		"time": "40:00:00",
+		"c": "1"
+	},
+	"bowtie2_map" :
+	{
+		"time": "40:00:00",
+		"mem": "40gb",
+		"c": "1"
+	},
+	"samtools_sort" :
+	{
+		"time": "40:00:00",
+		"c": "1"
+	},
+	"samtools_rmdup" : 
+	{
+		"time": "150:00:00",
+		"c": "1"
+	},
+	"samtools_sort_bams" :
+	{
+		"time": "40:00:00"
+	},
+	"samtools_sort_discordants" :
+	{
+		"time": "40:00:00"
+	},
+	"samtools_sort_splitters" :
+	{
+		"time": "40:00:00"
+	},
+	"gatk_indel_create" :
+	{
+		"time": "40:00:00"
+	},
+	"gatk_indel_realign" : 
+	{
+		"time": "40:00:00"
+	},
+	"freebayes" :
+	{
+		"time": "40:00:00"
+	}
+		
+}
