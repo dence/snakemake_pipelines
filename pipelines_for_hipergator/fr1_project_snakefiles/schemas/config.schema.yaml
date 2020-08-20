@@ -1,0 +1,41 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+    samples:
+      type: string
+    units:
+      type: string
+
+resources:
+    type: object
+    properties:
+      ref:
+        type: object
+        properties:
+          V1_01:
+            type: object
+            properties:
+              full:
+                type: string
+              custom:
+                type: string
+            required:
+              - full
+          V2_01:
+            type: object
+            properties:
+              full:
+                type: string
+              custom:
+                type: string
+              required:
+                - full
+
+required:
+  - samples
+  - units
+  - resources

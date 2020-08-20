@@ -21,8 +21,8 @@ rule trim_reads:
 		fq2="/orange/kirst/d.ence/pinus_taeda_L/fr1_sequencing/RAPiD-Genomics_HJYNGBBXX_UFL_104301_{sample}_R2_001.fastq.gz",
 		prev_log="logs/fastqc_pre_out/{sample}.log"
 	output:
-		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
-		fq2="trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz"
+		fq1=temp("trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz"),
+		fq2=temp("trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz")
 	log:
 		"logs/cutadapt/{sample}.log"
 	benchmark:
@@ -43,7 +43,24 @@ rule posttrim_fastqc:
 	shell:
 		"module load fastqc ; fastqc -f fastq -o {output} {input} &> {log}"
 
-rule bwamem_align:
+rule hisat2_align:
+	input:
+		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
+		fq2="trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz"
+	output:
+		temp("mapped_reads/{sample}.hisat2.bam")
+	log:
+		"logs/hisat2/{sample}.log"
+	params:
+		rg="--rg-id={sample} --rg \"SM:{sample}\" --rg \"LB:{sample}\" --rg \"PL:ILLUMINA\"",
+		ref=config["reference"]["V1_01"]["custom"]
+		#ref=config["reference"]["V2_01"]["custom"]
+	benchmark:
+		"benchmarks/{sample}.hisat2.benchmark.txt"
+	shell:
+		"module load hisat2; module load samtools; hisat2 -p 4 --mm --time -x {params.ref} {params.rg} -1 {input.fq1} -2 {input.fq2} | samtools view -bS - > {output} 2> {log}"
+
+rule bwa_mem_align:
 	input:
 		fq1="trimmed_reads/{sample}/{sample}.trimmed.R1.fastq.gz",
 		fq2="trimmed_reads/{sample}/{sample}.trimmed.R2.fastq.gz"
@@ -51,19 +68,19 @@ rule bwamem_align:
 		sample="{sample}",
 		ref=config["reference"]["V1_01"]["custom"]
 	output:
-		"mapped_reads/{sample}.bwa_mem.bam"
+		temp("mapped_reads/{sample}.bwa_mem.bam")
 	log:
 		"logs/bwa_mem/{sample}.bwa_mem.log"
 	shell:
 		"module load bwa/0.7.17 ; bwa mem {params.ref} " 
-		+ "-R '@RG\\tID:{params.sample}\\tSM:{params.sample}\\tPL:{params.sample}'" 
+		+ "-R '@RG\\tID:{params.sample}\\tSM:{params.sample}\\tPL:ILLUMINA'" 
 		+ "{input.fq1} {input.fq2} > {output} 2> {log}"	
 
 rule samtools_sort:
 	input:
 		"mapped_reads/{sample}.bwa_mem.bam"
 	output:
-		"sorted_reads/{sample}.bwa_mem.sorted.bam"
+		temp("sorted_reads/{sample}.bwa_mem.sorted.bam")
 	log:
 		"logs/samtools_sort/{sample}.log"
 	benchmark:
@@ -72,11 +89,36 @@ rule samtools_sort:
 	shell:
 		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{wildcards.sample} -O bam {input} > {output}"
 
+rule samtools_sort_hisat2:
+	input:
+		"mapped_reads/{sample}.hisat2.bam"
+	output:
+		temp("sorted_reads/{sample}.hisat2.sorted.bam")
+	log:
+		"logs/samtools_sort/{sample}.hisat2.log"
+	benchmark:
+		"benchmarks/{sample}.sort.benchmark.txt"
+	threads: 4		
+	shell:
+		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{wildcards.sample} -O bam {input} > {output} 2> {log}"
+
 rule samtools_rmdup:
 	input:
 		"sorted_reads/{sample}.bwa_mem.sorted.bam"
 	output:
-		"rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam"
+		temp("rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam")
+	log:
+		"logs/samtools_rmdup/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.rmdup.benchmark.txt"
+	shell:
+		"module load samtools; samtools rmdup {input} {output}"
+
+rule samtools_rmdup_hisat2:
+	input:
+		"sorted_reads/{sample}.hisat2.sorted.bam"
+	output:
+		temp("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam")
 	log:
 		"logs/samtools_rmdup/{sample}.log"
 	benchmark:
@@ -88,7 +130,19 @@ rule samtools_index_rmduped:
 	input:
 		"rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam"
 	output:
-		"rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai"
+		temp("rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai")
+	log:
+		"logs/samtools_index_sorted.{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_sorted.benchmark.txt"
+	shell:
+		"module load samtools; samtools index {input}"
+
+rule samtools_index_rmduped_hisat2:
+	input:
+		"rmduped_reads/{sample}.hisat2.sorted.rmdup.bam"
+	output:
+		temp("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai")
 	log:
 		"logs/samtools_index_sorted.{sample}.log"
 	benchmark:
@@ -100,7 +154,19 @@ rule samtools_index_sorted:
 	input:
 		"sorted_reads/{sample}.bwa_mem.sorted.rmdup.bam"
 	output:
-		"sorted_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai"
+		temp("sorted_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai")
+	log:
+		"logs/samtools_index_sorted/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_sorted.benchmark.txt"	
+	shell:
+		"module load samtools; samtool index {input}"
+
+rule samtools_index_sorted_hisat2:
+	input:
+		"sorted_reads/{sample}.hisat2.sorted.rmdup.bam"
+	output:
+		"sorted_reads/{sample}.hisat2.sorted.rmdup.bam.bai"
 	log:
 		"logs/samtools_index_sorted/{sample}.log"
 	benchmark:
@@ -112,15 +178,31 @@ rule gatk_indel_creator:
 		bam="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam",
 		bai="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam.bai"
 	output:
-		"realigner_intervals/{sample}.bwa_mem.intervals"
+		temp("realigner_intervals/{sample}.bwa_mem.intervals")
 	params:
 		ref=config["reference"]["V1_01"]["custom"]
 	log:
 		"logs/realigner_intervals/{sample}.intervals.log"
 	benchmark:
+		"benchmarks/{sample}.ineervals.benchmark.txt"
+	shell:
+		"module load gatk;  java -jar -Xmx9g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator --filter_reads_with_N_cigar -I {input.bam} -o {output} -R {params.ref}"
+
+rule gatk_indel_creator_hisat2:
+	input:
+		bam="rmduped_reads/{sample}.hisat2.sorted.rmdup.bam",
+		bai="rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai"
+	output:
+		"realigner_intervals/{sample}.hisat2.intervals"
+	params:
+		ref=config["reference"]["V1_01"]["custom"]
+	log:
+		"logs/realigner_intervals/{sample}.intervals.hisat2.log"
+	benchmark:
 		"benchmarks/{sample}.intervals.benchmark.txt"
 	shell:
-		"module load gatk;  java -jar -Xmx10g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator -I {input.bam} -o {output} -R {params.ref}"
+		"module load gatk;  java -jar -Xmx10g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator --filter_reads_with_N_cigar -I {input.bam} -o {output} -R {params.ref} &> {log}"
+
 rule gatk_indel_realign:
 	input:
 		bam="rmduped_reads/{sample}.bwa_mem.sorted.rmdup.bam",
@@ -135,7 +217,24 @@ rule gatk_indel_realign:
 	benchmark:
 		"benchmarks/{sample}.intervals.benchmark.txt"
 	shell:
-		"module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output}"
+		"module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner --filter_reads_with_N_cigar -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output} &> {log}"
+
+rule gatk_indel_realign_hisat2:
+	input:
+		bam="rmduped_reads/{sample}.hisat2.sorted.rmdup.bam",
+		bai="rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai",
+		interval="realigner_intervals/{sample}.hisat2.intervals"
+	output:
+		"realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bam"
+	params:
+		ref=config["reference"]["V1_01"]["custom"]
+	log:
+		"logs/realigner/{sample}.realigner.hisat2.log"
+	benchmark:
+		"benchmarks/{sample}.intervals.benchmark.txt"
+	shell:
+		"module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner --filter_reads_with_N_cigar -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output}"
+
 rule samtools_index_realigned:
 	input:
 		"realigned_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bam"
@@ -148,30 +247,87 @@ rule samtools_index_realigned:
 	shell:
 		"module load samtools; samtool index {input}"
 
-rule freebayes:
-        input:
-                ref=config["reference"]["V1_01"]["custom"],
-                bam=expand("realigned_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bam",sample=config["samples"]),
-                bai=expand("realigned_bams/{sample}.bwa_mem.sorted.rmdup.realigned.bai",sample=config["samples"])
-                #bam=expand("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam",sample=config["samples"]),
-                #bai=expand("rmduped_reads/{sample}.hisat2.sorted.rmdup.bam.bai",sample=config["samples"])
-        output:
-                "calls/all_samples.bwa_mem.freebayes_populations.vcf"
-        threads: 20
-        log:
-                "logs/freebayes/all_samples.log"
-        benchmark:
-                "benchmarks/all_samples.freebayes.benchmark.txt"
-        shell:
-                "module load freebayes; freebayes -f {input.ref} {input.bam} > {output} 2> freebayes.error"
+rule samtools_index_realigned_hisat2:
+	input:
+		"realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bam"
+	output:
+		"realigned_bams/{sample}.hisat2.sorted.rmdup.realigned.bai"
+	log:
+		"logs/samtools_index_realigned/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_realigned.benchmark.txt"
+	shell:
+		"module load samtools; samtool index {input}"
+
+rule freebayes_haploid_hisat2:
+	input:
+		bam=expand("RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam",sample=config["Fr1_meg_samples"]),
+		bai=expand("RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai",sample=config["Fr1_meg_samples"]),
+		bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.hisat2.megs.txt",
+		ref=config["reference"]["V1_01"]["custom"]
+	log:
+		"logs/freebayes/Fr1_megs.freebayes.log"
+	output:
+		"calls/freebayes/Fr1_megs.hisat2.freebayes.vcf"
+	shell:
+		"module load freebayes; freebayes-v1.3.1 --ploidy 2 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+
+#rule freebayes_progeny_hisat2:
+#	input:
+#		bam=expand("RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam",sample=config["Fr1_prog_samples"]),
+#		bai=expand("RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai",sample=config["Fr1_prog_samples"]),
+#		bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.hisat2.txt",
+#		ref=config["reference"]["V1_01"]["custom"]
+#	log:
+#		"logs/freebayes/Fr1_prog.freebayes.log"
+#	output:
+#		"calls/freebayes/Fr1_prog.hisat2.freebayes.vcf"
+#	shell:
+#		"module load freebayes; freebayes-v1.3.1 --ploidy 2 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+
+rule freebayes_individual_hisat2:
+	input:
+		bam="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam",
+		bai="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai",
+		ref=config["reference"]["V1_01"]["custom"]
+	log:
+		"logs/freebayes/individual/Fr1.{sample}.freebayes.hisat2.log"
+	output:
+		"calls/freebayes/individual/Fr1.{sample}.hisat2.freebayes.vcf"
+	shell:
+		"module load freebayes; freebayes-v1.3.1 --ploidy 2 -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed {input.bam} &> {log}"
+
+rule freebayes_individual_bwa_mem:
+	input:
+		bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
+		bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",
+		ref=config["reference"]["V1_01"]["custom"]
+	log:
+		"logs/freebayes/individual/Fr1.{sample}.freebayes.bwa_mem.log"
+	output:
+		"calls/freebayes/individual/Fr1.{sample}.bwa_mem.freebayes.vcf"
+	shell:
+		"module load freebayes; freebayes-v1.3.1 --ploidy 2 -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed {input.bam} &> {log}"
 
 rule merge_lane_bams:
 	input:
 		#making a dumb assumption about the names of the bams to merged. specific to the Fr1 project. DE
-		L4_bam="realigned_bams/{sample}_L004.bwa_mem.sorted.rmdup.realigned.bam",
-		L5_bam="realigned_bams/{sample}_L005.bwa_mem.sorted.rmdup.realigned.bam"
+		L4_bam="rmduped_reads/{sample}_L004.bwa_mem.sorted.rmdup.bam",
+		L5_bam="rmduped_reads/{sample}_L005.bwa_mem.sorted.rmdup.bam"
 	output:
-		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
+		temp("merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam")
+	log:
+		"logs/picard_merge_sam_files/{sample}.log"
+	shell:
+		"module load picard; java -jar $HPC_PICARD_DIR/picard.jar MergeSamFiles I={input.L4_bam} I={input.L5_bam} O={output} &> {log}"
+
+rule merge_lane_bams_hisat2:
+	input:
+		#making a dumb assumption about the names of the bams to merged. specific to the Fr1 project. DE
+		L4_bam="rmduped_reads/{sample}_L004.hisat2.sorted.rmdup.bam",
+		L5_bam="rmduped_reads/{sample}_L005.hisat2.sorted.rmdup.bam"
+	output:
+		temp("merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam")
 	log:
 		"logs/picard_merge_sam_files/{sample}.log"
 	shell:
@@ -181,7 +337,15 @@ rule index_merged_bams:
 	input:
 		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
 	output:
-		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai"
+		temp("merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai")
+	shell:
+		"module load samtools; samtools index {input}"
+
+rule index_merged_bams_hisat2:
+	input:
+		"merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	output:
+		temp("merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai")
 	shell:
 		"module load samtools; samtools index {input}"
 
@@ -197,11 +361,35 @@ rule samtools_index_replaced:
 	shell:
 		"module load samtools; samtools index {input}"
 
+rule samtools_index_replaced_hisat2:
+	input:
+		"RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	output:
+		"RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai"
+	log:
+		"logs/samtools_index_realigned/{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_realigned.benchmark.txt"
+	shell:
+		"module load samtools; samtools index {input}"
+
 rule ReplaceRG_merged:
 	input:
-		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
+		"merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
 	output:
-		"RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
+		"RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
+	params:
+		RG_fields="RGID={sample} RGLB={sample} RGPL=illumina RGPU={sample} RGSM={sample}"
+	log:
+		"logs/picard_replaceRG/{sample}.log"
+	shell:
+		"module load picard; java -jar $HPC_PICARD_DIR/picard.jar AddOrReplaceReadGroups I={input} O={output} {params.RG_fields} &> {log}"
+
+rule ReplaceRG_merged_hisat2:
+	input:
+		"merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+	output:
+		"RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
 	params:
 		RG_fields="RGID={sample} RGLB={sample} RGPL=illumina RGPU={sample} RGSM={sample}"
 	log:
@@ -211,9 +399,21 @@ rule ReplaceRG_merged:
 
 rule samtools_index_merged:
         input:
-                "RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam"
+                "merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
         output:
-                "RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai"
+                "merged_lane_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai"
+        log:
+                "logs/samtools_index_merged/{sample}.log"
+        benchmark:
+                "benchmarks/{sample}.index_merged.benchmark.txt"
+        shell:
+                "module load samtools; samtools index {input}"
+
+rule samtools_index_merged_hisat2:
+        input:
+                "merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam"
+        output:
+                "merged_lane_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai"
         log:
                 "logs/samtools_index_merged/{sample}.log"
         benchmark:
@@ -223,8 +423,8 @@ rule samtools_index_merged:
 
 rule freebayes_haploid:
 	input:
-		bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["Fr1_meg_samples"]),
-		bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",sample=config["Fr1_meg_samples"]),
+		bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",sample=config["Fr1_meg_samples"]),
+		bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",sample=config["Fr1_meg_samples"]),
 		bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.megs.txt",
 		ref=config["reference"]["V1_01"]["custom"]
 	log:
@@ -232,25 +432,30 @@ rule freebayes_haploid:
 	output:
 		"calls/freebayes/Fr1_megs.bwa_mem.freebayes.vcf"
 	shell:
-		"module load freebayes; freebayes-v1.3.1 --skip-coverage 200 --ploidy 2  --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+		#"module load freebayes; freebayes-v1.3.1 --skip-coverage 1000 --ploidy 2  --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+		"module load freebayes; freebayes-v1.3.1 --ploidy 2 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
 
-rule freebayes_10_5_prog:
-        input:
-                bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["Fr1_prog_samples"]),
-                bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",sample=config["Fr1_prog_samples"]),
-                bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.txt",
-                ref=config["reference"]["V1_01"]["custom"]
-        log:
-                "logs/freebayes/Fr1_prog.freebayes.log"
-        output:
-                "calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf"
-        shell:
-                "module load freebayes; freebayes-v1.3.1 --ploidy 2 --skip-coverage 200 --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+#rule freebayes_10_5_prog:
+#	input:
+#		bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",sample=config["Fr1_prog_samples"]),
+#		bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",sample=config["Fr1_prog_samples"]),
+#		bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.txt",
+#		ref=config["reference"]["V1_01"]["custom"],
+#		deconv="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf.gz"
+#	log:
+#		"logs/freebayes/Fr1_prog.freebayes.log"
+#	output:
+#		"calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf"
+#	shell:
+#                "module load freebayes; freebayes-v1.3.1 --ploidy 2 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+                #"module load freebayes; freebayes-v1.3.1 --ploidy 2 --only-use-input-alleles {input.deconv} --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+		#"module load freebayes; freebayes-v1.3.1 --ploidy 2 --variant-input {input.bgzipped} --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+		#"module load freebayes; freebayes-v1.3.1 --ploidy 2 --variant-input {input.bgzipped} --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} &> {log}"
 
 rule freebayes_non_10_5_indv:
         input:
-                bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",sample=config["non_10_5_indv"]),
-                bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",sample=config["non_10_5_indv"]),
+                bam=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",sample=config["non_10_5_indv"]),
+                bai=expand("RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",sample=config["non_10_5_indv"]),
                 bam_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_indv.txt",
                 ref=config["reference"]["V1_01"]["custom"]
         log:
@@ -258,29 +463,87 @@ rule freebayes_non_10_5_indv:
         output:
                 "calls/freebayes/non_10_5_indv.bwa_mem.freebayes.vcf" 
         shell:
-                "module load freebayes; freebayes-v1.3.1 --ploidy 2 --skip-coverage 200 --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+                #"module load freebayes; freebayes-v1.3.1 --ploidy 2 --skip-coverage 1000 --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+                "module load freebayes; freebayes-v1.3.1 --ploidy 2 --min-coverage 50 --bam-list {input.bam_list} -f {input.ref} --vcf {output} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
 
 rule freebayes_non_10_5_pooled_single_sample:
 	input:
-                bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",
-                bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",
+                bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
+                bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai",
                 ref=config["reference"]["V1_01"]["custom"]
 	output:
 		vcf="calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.vcf"
 	log:
                 "logs/freebayes/{sample}.non_10_5_pooled.freebayes.log"
 	shell:
-                "module load freebayes; freebayes-v1.3.1 --ploidy 20 --skip-coverage 200 --use-best-n-alleles 2 --pooled-discrete  --min-coverage 50 --bam {input.bam} -f {input.ref} --vcf {output.vcf} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+                #"module load freebayes; freebayes-v1.3.1 --ploidy 20 --skip-coverage 1000 --use-best-n-alleles 2 --pooled-discrete  --min-coverage 50 --bam {input.bam} -f {input.ref} --vcf {output.vcf} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+                "module load freebayes; freebayes-v1.3.1 --ploidy 20 --use-best-n-alleles 2 --pooled-discrete  --min-coverage 50 --bam {input.bam} -f {input.ref} --vcf {output.vcf} --targets /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed &> {log}"
+
+rule bgzip_and_tabix_megs_vcf:
+	input:
+		megs_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf"
+	output:
+		bgzipped="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf.gz",
+		tabix_indexed="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf.gz.tbi"
+	shell:
+		"module load vcflib; cat {input.megs_vcf} | bgzip -c > {output.bgzipped} ; tabix -p vcf {output.bgzipped} ; touch {output.tabix_indexed}"
+
+rule bgzip_and_tabix_individual_hisat2_vcf:
+	input:
+		vcf="calls/freebayes/individual/Fr1.{sample}.hisat2.freebayes.vcf"
+	output:
+		bgzipped="calls/freebayes/individual/Fr1.{sample}.hisat2.vcf.gz",
+		tabix_indexed="calls/freebayes/individual/Fr1.{sample}.hisat2.vcf.gz.tbi"
+	shell:
+		"module load vcflib; cat {input.vcf} | bgzip -c > {output.bgzipped} ; tabix -p vcf {output.bgzipped} ; touch {output.tabix_indexed}"
+	
+rule bgzip_and_tabix_individual_bwa_mem_vcf:
+	input:
+		vcf="calls/freebayes/individual/Fr1.{sample}.bwa_mem.freebayes.vcf"
+	output:
+		bgzipped="calls/freebayes/individual/Fr1.{sample}.bwa_mem.vcf.gz",
+		tabix_indexed="calls/freebayes/individual/Fr1.{sample}.bwa_mem.vcf.gz.tbi"
+	shell:
+		"module load vcflib; cat {input.vcf} | bgzip -c > {output.bgzipped} ; tabix -p vcf {output.bgzipped} ; touch {output.tabix_indexed}"
 
 rule bgzip_and_tabix_vcf:
 	input:
 		vcf="calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.vcf"
 	output:
 		bgzipped="calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.vcf.gz",
-		tabix_indexed="calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.gz.tbi"
+		tabix_indexed="calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.vcf.gz.tbi"
 	shell:
 		"module load vcflib; cat {input.vcf} | bgzip -c > {output.bgzipped} ; tabix -p vcf {output.bgzipped} ; touch {output.tabix_indexed}"
 
+rule postprocess_megs:
+	input:
+		megs_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.vcf",
+		ref=config["reference"]["V1_01"]["custom"]
+	output:
+		megs_deconv_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf"
+	shell:
+		"module load bedtools vcflib vt; cat {input.megs_vcf} | vcfallelicprimitives --keep-info --keep-geno | vt normalize -r {input.ref} - > {output.megs_deconv_vcf}"
+
+rule postprocess_progs:
+	input:
+		prog_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf",
+		ref=config["reference"]["V1_01"]["custom"]
+	output:
+		prog_deconv_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.deconvoluted.vcf"
+	shell:
+		"module load bedtools vcflib vt; cat {input.prog_vcf} | vcfallelicprimitives --keep-info --keep-geno | vt normalize -r {input.ref} - > {output.prog_deconv_vcf};" 
+
+rule postprocess_other_vcfs:
+	input:
+		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.vcf",
+		non_10_5_indv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.vcf",
+		ref=config["reference"]["V1_01"]["custom"]
+	output:
+		non_10_5_pooled_deconv_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.deconvoluted.vcf",
+		non_10_5_indv_deconv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.deconvoluted.vcf"
+	shell:
+		"module load bedtools vcflib vt; cat {input.non_10_5_pooled_vcf} | vcfallelicprimitives --keep-info --keep-geno | vt normalize -r {input.ref} - > {output.non_10_5_pooled_deconv_vcf}; cat {input.non_10_5_indv_vcf} | vcfallelicprimitives --keep-info --keep-geno | vt normalize -r {input.ref} - > {output.non_10_5_indv_deconv_vcf}"
+		
 rule merge_freebayes_non_10_5_pooled_singles:
 	input:
 		bgzipped_vcf=expand("calls/freebayes/{sample}.non_10_5_pooled.bwa_mem.freebayes.vcf.gz",sample=config["non_10_5_pooled"])
@@ -291,113 +554,237 @@ rule merge_freebayes_non_10_5_pooled_singles:
 	shell:
 		"module load vcftools; vcf-merge -d --ref-for-missing 0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0/0 {input.bgzipped_vcf} > {output.vcf} 2> {log}"
 
+rule merge_freebayes_Fr1_progeny_individuals_hisat2:
+	input:
+		bgzipped_vcf=expand("calls/freebayes/individual/Fr1.{sample}.hisat2.freebayes.vcf.gz",sample=config["Fr1_prog_samples"]),
+	output:
+		vcf="calls/freebayes/Fr1_prog.freebayes.hisat2.vcf"
+	log:
+		"logs/freebayes/Fr1_prog.freebayes.merge.hisat2.log"
+	shell:
+		"module load vcftools; vcf-merge -d --ref-for-missing 0/0 {input.bgzipped_vcf} > {output.vcf} 2> {log}"
+		
+rule merge_freebayes_Fr1_progeny_individuals_bwa_mem:
+	input:
+		bgzipped_vcf=expand("calls/freebayes/individual/Fr1.{sample}.freebayes.bwa_mem.vcf.gz",sample=config["Fr1_prog_samples"]),
+	output:
+		vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf"
+	log:
+		"logs/freebayes/Fr1_prog.freebayes.merge.bwa_mem.log"
+	shell:
+		"module load vcftools; vcf-merge -d --ref-for-missing 0/0 {input.bgzipped_vcf} > {output.vcf} 2> {log}"
+
 rule mosdepth:
 	input:
-		bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam",
-		bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.realigned.merged.bam.bai",
-		ref=config["reference"]["V1_01"]["custom"]
+		bam="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam",
+		bai="RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam.bai"
 	params:
-		" --fast-mode -b /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed --no-per-base {sample}"
+		options=" --by /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed --no-per-base ./mosdepth/{sample}",
+		gz="mosdepth/{sample}.regions.bed.gz"	
 	output:
-		"mosdepth/{sample}.mosdepth.summary.txt"
+		temp(bed="mosdepth/{sample}.regions.bed")	
 	log:
 		"logs/mosdepth/{sample}.mosdepth.log"
 	shell:
-		"time mosdepth {params} {input.bam} "	
-
-rule compile_non_10_5_pooled_mosdepth_report:
-	input:
-		non_10_5_pooled_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["non_10_5_pooled"]),
-		non_10_5_pooled_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_pooled.txt"
-	output:
-		"mosdepth/non_10_5_pooled.mosdepth.report.txt"
-	run:
-		all_sample = open(output,'w')
-		open_list = open(non_10_5_pooled_list,'r')
-		for l in open_list:
-			short_sample_ID = l.split('/')[10].split('_i')[0]
-			long_sample_ID = l.split('/')[10].split('.')[0]
-			
-			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
-			tmp = curr_mosdepth.read()
-			for depth_line in curr_mosdepth:
-				new_line = short_sample_ID + "\t10_5_x_4-6664\tpool\t" + depth_line
-				all_sample.write(new_line + "\n")
-		all_sample.close()
+		"module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"	
 
 rule compile_non_10_5_indv_mosdepth_report:
 	input:
-		non_10_5_indv_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["non_10_5_indv"]),
-		non_10_5_indv_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_indv.txt",
-		non_10_5_pooled_report="mosdepth/non_10_5_pooled.mosdepth.report.txt"
+		non_10_5_indv_mosdepths=expand("mosdepth/{sample}.regions.bed",sample=config["non_10_5_indv"]),
+		non_10_5_indv_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_indv.txt"
 	output:
-		"mosdepth/non_10_5_indv.mosdepth.report.txt"
+		filename="mosdepth/non_10_5_indv.mosdepth.report.txt"
+	log:
+		"logs/mosdepth/non_10_5_indv.mosdepth.report.log"
 	run:
-		all_sample = open(output,'w')
-		open_list = open(non_10_5_indv_list,'r')
+		open_list = open(input.non_10_5_indv_list,'r')
+		header_line = "sample_ID\tfamily\t"
+		header_line_finished=0
+		sample_lines = []
+
+		for l in open_list:
+			short_sample_ID = l.split('/')[10].split('_i')[0]
+			long_sample_ID = l.split('/')[10].split('.')[0]
+			
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".regions.bed")
+			tmp = curr_mosdepth.readline() #skip the header line
+			
+			family = ""
+			if(short_sample_ID == "P02_WG07"):
+				family = "20-1010"
+			else:
+				family = "10-5_X_4-6664"
+			new_line = short_sample_ID + "\t" + family + "\t"
+			for depth_line in curr_mosdepth:
+				region = depth_line.strip().split("\t")[0]
+				print("region is:\t" + region) 
+				mean_covg = depth_line.strip().split("\t")[3]
+				print("mean_covg:\t" + mean_covg)
+		
+				new_line = new_line + mean_covg + "\t" 
+				if(header_line_finished == 0):
+					header_line = header_line + region + "_mean_covg\t"
+			
+			header_line_finished=1
+			sample_lines.append(new_line)
+			curr_mosdepth.close()
+		
+		all_sample = open(output.filename,'w')
+		all_sample.write(header_line + "\n")
+		for line in sample_lines:
+			all_sample.write(line + "\n")
+		all_sample.close()
+
+rule compile_non_10_5_pooled_mosdepth_report:
+	input:
+		non_10_5_pooled_mosdepths=expand("mosdepth/{sample}.regions.bed",sample=config["non_10_5_pooled"]),
+		non_10_5_pooled_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.non_10_5_pooled.txt"
+	output:
+		filename="mosdepth/non_10_5_pooled.mosdepth.report.txt"
+	log:
+		filename="logs/mosdepth/non_10_5_pooled.report.log"
+	run:
+		open_list = open(input.non_10_5_pooled_list,'r')
+		header_line = "sample_ID\tfamily\t"
+		header_line_finished=0
+		sample_lines = []
+
+		open_log = open(log.filename, 'w')
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
 
-			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
-			tmp = curr_mosdepth.read()
-			for depth_line in curr_mosdepth:
-				GT = ""
-				if(short_sample_ID == "P04_WA08"):
-					GT="CL04"
-				elif(short_sample_ID == "P04_WB08"):
-					GT="CL05"
-				elif(short_sample_ID == "P04_WC08"):
-					GT="PD18"
-				elif(short_sample_ID == "P04_WD08"):
-					GT="PD35"
-				elif(short_sample_ID == "P02_WG07"):
-					GT="20-1010"
+			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".regions.bed")
+			open_log.write("opened this file:\tmosdepth/" + long_sample_ID + ".regions.bed\n")
+			tmp = curr_mosdepth.readline()
+			open_log.write(tmp + "\n")
 		
-				new_line = short_sample_ID + "\t" + GT + "\tdiploid\t" + depth_line
-				all_sample.write(new_line + "\n")
-		all_sample.close() 
+			family=""
+			open_log.write("short_sample_ID is:\t" + short_sample_ID + "\n")
+			if(short_sample_ID == "P04_WA08"):
+				family="CL04"
+			elif(short_sample_ID == "P04_WB08"):
+				family="CL05"
+			elif(short_sample_ID == "P04_WC08"):
+				family="PD18"
+			elif(short_sample_ID == "P04_WD08"):
+				family="PD35"
+			new_line = short_sample_ID + "\t" + family + "\t"
+			open_log.write("family is:\t" + family + "\n")
+			
+			for depth_line in curr_mosdepth:
+				open_log.write("depth_line is:\t" + depth_line + "\n")
+				region = depth_line.strip().split("\t")[0]
+				mean_covg = depth_line.strip().split("\t")[3]
+				
+				open_log.write("region is:\t" + region + "\n")
+				open_log.write("mean_covg is:\t" + mean_covg + "\n")
+
+				if(header_line_finished == 0):
+					header_line = header_line + region + "_mean_covg\t"
+				new_line = new_line + mean_covg + "\t"
+			sample_lines.append(new_line)	
+			curr_mosdepth.close()
+		
+			header_line_finished=1
+		all_sample = open(output.filename,'w')
+		all_sample.write(header_line + "\n")
+		for line in sample_lines:
+			all_sample.write(line + "\n")
+		all_sample.close()
+		open_log.close() 
 
 rule compile_10_5_megs_report:
 	input:
-		megs_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["Fr1_meg_samples"]),
-		megs_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls_bam_list.megs.txt",
-		non_10_5_pooled_report="mosdepth/non_10_5_indv.mosdepth.report.txt"
+		megs_mosdepths=expand("mosdepth/{sample}.regions.bed",sample=config["Fr1_meg_samples"]),
+		megs_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.megs.txt"
 	output:
-		"mosdepth/10_5_megs.mosdepth.report.txt"
+		filename="mosdepth/10_5_megs.mosdepth.report.txt"
+	log:
+		filename="logs/mosdepth/10_5_megs.mosdepth.report.log"
 	run:
-		all_sample = open(output,'w')
-		open_list = open(megs_list,'r')
+		open_list = open(input.megs_list,'r')
+		open_log = open(log.filename,'w')
+		header_line = "sample_ID\tfamily\t"
+		header_line_finished=0
+		sample_lines = []
+
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
 
-			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
-			tmp = curr_mosdepth.read()
+			curr_filename = "mosdepth/" + long_sample_ID + ".regions.bed"
+			curr_mosdepth = open(curr_filename,'r')
+			tmp = curr_mosdepth.readline()
+			
+			new_line = short_sample_ID + "\t10_5_meg\t"
+	
+			line_count = 0	
+			for depth_line in curr_mosdepth:
+				region = depth_line.strip().split("\t")[0]
+				mean_covg = depth_line.strip().split("\t")[3]
+				
+				if(header_line_finished == 0):
+					header_line = header_line + region + "_mean_covg\t"
+				new_line = new_line + mean_covg + "\t"
+				line_count = line_count + 1
+			sample_lines.append(new_line)
+			curr_mosdepth.close()
 
-			new_line = short_sample_ID + "\t10_5\thaploid\t" + depth_line
-			all_samples.write(new_line + "\n")
+			open_log.write("this file:\t" + curr_filename + " had this many lines:\t" + str(line_count) + "\n")
+			header_line_finished = 1
+		all_sample = open(output.filename,'w')
+		all_sample.write(header_line + "\n")
+		for line in sample_lines:
+			all_sample.write(line + "\n")
 		all_sample.close()
+		open_log.close()
 
 rule compile_10_5_prog_report:
 	input:
-		prog_mosdepths=expand("mosdepth/{sample}.mosdepth.summary.txt",sample=config["Fr1_prog_samples"]),
-		prog_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.txt",
-		megs_report="mosdepth/10_5_megs.mosdepth.report.txt"
+		prog_mosdepths=expand("mosdepth/{sample}.regions.bed",sample=config["Fr1_prog_samples"]),
+		prog_list="/home/d.ence/projects/pinus_taeda_L/Fr1_project/aligning_Fr1_samples/aligning_to_custom_R_gene_V1_1_ref/calls/bam_list.Fr1_prog.txt"
 	output:
-		"mosdepth/10_5_prog.mosdepth.report.txt"
+		filename="mosdepth/10_5_prog.mosdepth.report.txt"
+	log:
+		filename="logs/mosdepth/10_5_prog.mosdepth.report.log"
 	run:
-		all_sample = open(output,'w')
-		open_list = open(10_5_prog_list,'r')
+		open_list = open(input.prog_list,'r')
+		header_line = "sample_ID\tfamily\t"
+		header_line_finished = 0
+		sample_lines = []
+		open_log = open(log.filename,'w')
+	
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
-			curr_mosdepth = open("mosdepth/" + long_sample_ID + ".mosdepth.summary.txt")
-			tmp = curr_mosdepth.read()
+
+			curr_filename = "mosdepth/" + long_sample_ID + ".regions.bed"
+			curr_mosdepth = open(curr_filename,'r')
+			tmp = curr_mosdepth.readline()
 			
-			new_line = short_sample_ID + "\t10_5xunknown\tdiploid\t" + depth_line
-			all_samples.write(new_line + "\n")
+			new_line = short_sample_ID + "\t10_5_prog\t"
+		
+			line_counter = 0	
+			for depth_line in curr_mosdepth:
+				region = depth_line.strip().split("\t")[0]
+				mean_covg = depth_line.strip().split("\t")[3]
+		
+				if(header_line_finished == 0):	
+					header_line = header_line + region + "_mean_covg\t"
+				new_line = new_line + mean_covg + "\t"
+				line_counter = line_counter + 1
+			sample_lines.append(new_line)
+			curr_mosdepth.close()
+			open_log.write("this file:\t" + curr_filename + " had this many lines:\t" + str(line_counter) + "\n")
+	
+			header_line_finished = 1	
+		all_sample = open(output.filename,'w')
+		all_sample.write(header_line + "\n")
+		for line in sample_lines:
+			all_sample.write(line + "\n")
 		all_sample.close()
+		open_log.close()
 		 
 #rule freebayes_non_10_5_pooled:
 #        input:
@@ -414,11 +801,17 @@ rule compile_10_5_prog_report:
 
 rule report:
 	input:
-		megs_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.vcf",
-		prog_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.vcf",
-		non_10_5_indv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.vcf",
-		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.vcf",
-		mosdepth_files="mosdepth/non_10_5_pooled.mosdepth.report.txt"
+		megs_vcf="calls/freebayes/Fr1_megs.bwa_mem.freebayes.deconvoluted.vcf",
+		prog_vcf="calls/freebayes/Fr1_prog.bwa_mem.freebayes.deconvoluted.vcf",
+		non_10_5_indv_vcf="calls/freebayes/non_10_5_indv.bwa_mem.freebayes.deconvoluted.vcf",
+		non_10_5_pooled_vcf="calls/freebayes/non_10_5_pooled.bwa_mem.freebayes.deconvoluted.vcf",
+		prog_report="mosdepth/10_5_prog.mosdepth.report.txt",
+		megs_report="mosdepth/10_5_megs.mosdepth.report.txt",
+		non_10_5_indv="mosdepth/non_10_5_indv.mosdepth.report.txt",
+		non_10_5_pooled="mosdepth/non_10_5_pooled.mosdepth.report.txt",
+		megs_hisat2="calls/freebayes/Fr1_megs.hisat2.freebayes.vcf",
+		prog_hisat2="calls/freebayes/Fr1_prog.hisat2.freebayes.vcf"
+			
 	output:
 		"freebayes_calls.report.html"
 	run:

@@ -1,0 +1,16 @@
+$schema: "http://json-schema.org/draft-04/schema#"
+
+description: an entry in the sample sheet
+properties:
+  sample_short:
+    type: string
+    description: short version of the sample name
+  sample_long:
+    type: string
+    description: long version of the sample name
+  sample_type:
+    type: string
+    description: brief description of sample origin
+  num_pooled:
+    type: number
+    description: number of individuals pooled in the sample, used for variant calling step

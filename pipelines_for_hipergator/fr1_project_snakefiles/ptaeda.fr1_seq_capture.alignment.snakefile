@@ -72,9 +72,9 @@ rule hisat2_align:
 	log:
 		"logs/hisat2/{sample}.bwa_mem.log"
 	shell:
-		"module load bwa/0.7.17 ; bwa mem {params.ref} " 
-		+ "-R '@RG\\tID:{params.sample}\\tSM:{params.sample}\\tPL:ILLUMINA'" 
-		+ "{input.fq1} {input.fq2} > {output} 2> {log}"	
+		"module load bwa/0.7.17 ; bwa mem {params.ref} "
+		+ "-R '@RG\\tID:{params.sample}\\tSM:{params.sample}\\tPL:ILLUMINA'"
+		+ "{input.fq1} {input.fq2} > {output} 2> {log}"
 
 rule samtools_sort:
 	input:
@@ -85,7 +85,7 @@ rule samtools_sort:
 		"logs/samtools_sort/{sample}.log"
 	benchmark:
 		"benchmarks/{sample}.sort.benchmark.txt"
-	threads: 4		
+	threads: 4
 	shell:
 		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{wildcards.sample} -O bam {input} > {output}"
 
@@ -98,7 +98,7 @@ rule samtools_sort_hisat2:
 		"logs/samtools_sort/{sample}.hisat2.log"
 	benchmark:
 		"benchmarks/{sample}.sort.benchmark.txt"
-	threads: 4		
+	threads: 4
 	shell:
 		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{wildcards.sample} -O bam {input} > {output} 2> {log}"
 
@@ -158,7 +158,7 @@ rule samtools_index_sorted:
 	log:
 		"logs/samtools_index_sorted/{sample}.log"
 	benchmark:
-		"benchmarks/{sample}.index_sorted.benchmark.txt"	
+		"benchmarks/{sample}.index_sorted.benchmark.txt"
 	shell:
 		"module load samtools; samtool index {input}"
 
@@ -170,7 +170,7 @@ rule samtools_index_sorted_hisat2:
 	log:
 		"logs/samtools_index_sorted/{sample}.log"
 	benchmark:
-		"benchmarks/{sample}.index_sorted.benchmark.txt"	
+		"benchmarks/{sample}.index_sorted.benchmark.txt"
 	shell:
 		"module load samtools; samtool index {input}"
 rule gatk_indel_creator:
@@ -377,13 +377,13 @@ rule mosdepth_hisat2:
 		bai="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai"
 	params:
 		options=" --by /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed --no-per-base ./mosdepth/{sample}",
-		gz="mosdepth/hisat2/{sample}.regions.bed.gz"	
+		gz="mosdepth/hisat2/{sample}.regions.bed.gz"
 	output:
-		temp(bed="mosdepth/hisat2/{sample}.regions.bed")	
+		temp(bed="mosdepth/hisat2/{sample}.regions.bed")
 	log:
 		"logs/mosdepth/hisat2/{sample}.mosdepth.log"
 	shell:
-		"module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"	
+		"module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"
 
 rule mosdepth_hisat2:
 	input:
@@ -391,14 +391,14 @@ rule mosdepth_hisat2:
 		bai="RG_replaced_bams/{sample}.hisat2.sorted.rmdup.merged.bam.bai"
 	params:
 		options=" --by /home/d.ence/projects/pinus_taeda_L/Fr1_project/probe_files/RG_0610_merged.fixed.bed --no-per-base ./mosdepth/{sample}",
-		gz="mosdepth/hisat2/{sample}.regions.bed.gz"	
+		gz="mosdepth/hisat2/{sample}.regions.bed.gz"
 	output:
-		temp(bed="mosdepth/hisat2/{sample}.regions.bed")	
+		temp(bed="mosdepth/hisat2/{sample}.regions.bed")
 	log:
 		"logs/mosdepth/hisat2/{sample}.mosdepth.log"
 	shell:
-		"module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"	
-		
+		"module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"
+
 rule compile_non_10_5_indv_mosdepth_report:
 	input:
 		non_10_5_indv_mosdepths=expand("mosdepth/hisat2/{sample}.regions.bed",sample=config["non_10_5_indv"]),
@@ -416,10 +416,10 @@ rule compile_non_10_5_indv_mosdepth_report:
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
-			
+
 			curr_mosdepth = open("mosdepth/hisat2/" + long_sample_ID + ".regions.bed")
 			tmp = curr_mosdepth.readline() #skip the header line
-			
+
 			family = ""
 			if(short_sample_ID == "P02_WG07"):
 				family = "20-1010"
@@ -428,18 +428,18 @@ rule compile_non_10_5_indv_mosdepth_report:
 			new_line = short_sample_ID + "\t" + family + "\t"
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
-				print("region is:\t" + region) 
+				print("region is:\t" + region)
 				mean_covg = depth_line.strip().split("\t")[3]
 				print("mean_covg:\t" + mean_covg)
-		
-				new_line = new_line + mean_covg + "\t" 
+
+				new_line = new_line + mean_covg + "\t"
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
-			
+
 			header_line_finished=1
 			sample_lines.append(new_line)
 			curr_mosdepth.close()
-		
+
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
@@ -469,7 +469,7 @@ rule compile_non_10_5_pooled_mosdepth_report:
 			open_log.write("opened this file:\tmosdepth/" + long_sample_ID + ".regions.bed\n")
 			tmp = curr_mosdepth.readline()
 			open_log.write(tmp + "\n")
-		
+
 			family=""
 			open_log.write("short_sample_ID is:\t" + short_sample_ID + "\n")
 			if(short_sample_ID == "P04_WA08"):
@@ -482,28 +482,28 @@ rule compile_non_10_5_pooled_mosdepth_report:
 				family="PD35"
 			new_line = short_sample_ID + "\t" + family + "\t"
 			open_log.write("family is:\t" + family + "\n")
-			
+
 			for depth_line in curr_mosdepth:
 				open_log.write("depth_line is:\t" + depth_line + "\n")
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-				
+
 				open_log.write("region is:\t" + region + "\n")
 				open_log.write("mean_covg is:\t" + mean_covg + "\n")
 
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
-			sample_lines.append(new_line)	
+			sample_lines.append(new_line)
 			curr_mosdepth.close()
-		
+
 			header_line_finished=1
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
 			all_sample.write(line + "\n")
 		all_sample.close()
-		open_log.close() 
+		open_log.close()
 
 rule compile_10_5_megs_report:
 	input:
@@ -527,14 +527,14 @@ rule compile_10_5_megs_report:
 			curr_filename = "mosdepth/hisat2/" + long_sample_ID + ".regions.bed"
 			curr_mosdepth = open(curr_filename,'r')
 			tmp = curr_mosdepth.readline()
-			
+
 			new_line = short_sample_ID + "\t10_5_meg\t"
-	
-			line_count = 0	
+
+			line_count = 0
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-				
+
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
@@ -565,7 +565,7 @@ rule compile_10_5_prog_report:
 		header_line_finished = 0
 		sample_lines = []
 		open_log = open(log.filename,'w')
-	
+
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
@@ -573,30 +573,30 @@ rule compile_10_5_prog_report:
 			curr_filename = "mosdepth/hisat2/" + long_sample_ID + ".regions.bed"
 			curr_mosdepth = open(curr_filename,'r')
 			tmp = curr_mosdepth.readline()
-			
+
 			new_line = short_sample_ID + "\t10_5_prog\t"
-		
-			line_counter = 0	
+
+			line_counter = 0
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-		
-				if(header_line_finished == 0):	
+
+				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
 				line_counter = line_counter + 1
 			sample_lines.append(new_line)
 			curr_mosdepth.close()
 			open_log.write("this file:\t" + curr_filename + " had this many lines:\t" + str(line_counter) + "\n")
-	
-			header_line_finished = 1	
+
+			header_line_finished = 1
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
 			all_sample.write(line + "\n")
 		all_sample.close()
 		open_log.close()
-		 
+
 rule compile_non_10_5_indv_mosdepth_report_hisat2:
 	input:
 		non_10_5_indv_mosdepths=expand("mosdepth/hisat2/{sample}.regions.bed",sample=config["non_10_5_indv"]),
@@ -614,10 +614,10 @@ rule compile_non_10_5_indv_mosdepth_report_hisat2:
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
-			
+
 			curr_mosdepth = open("mosdepth/hisat2/" + long_sample_ID + ".regions.bed")
 			tmp = curr_mosdepth.readline() #skip the header line
-			
+
 			family = ""
 			if(short_sample_ID == "P02_WG07"):
 				family = "20-1010"
@@ -626,18 +626,18 @@ rule compile_non_10_5_indv_mosdepth_report_hisat2:
 			new_line = short_sample_ID + "\t" + family + "\t"
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
-				print("region is:\t" + region) 
+				print("region is:\t" + region)
 				mean_covg = depth_line.strip().split("\t")[3]
 				print("mean_covg:\t" + mean_covg)
-		
-				new_line = new_line + mean_covg + "\t" 
+
+				new_line = new_line + mean_covg + "\t"
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
-			
+
 			header_line_finished=1
 			sample_lines.append(new_line)
 			curr_mosdepth.close()
-		
+
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
@@ -667,7 +667,7 @@ rule compile_non_10_5_pooled_mosdepth_report_hisat2:
 			open_log.write("opened this file:\tmosdepth/" + long_sample_ID + ".regions.bed\n")
 			tmp = curr_mosdepth.readline()
 			open_log.write(tmp + "\n")
-		
+
 			family=""
 			open_log.write("short_sample_ID is:\t" + short_sample_ID + "\n")
 			if(short_sample_ID == "P04_WA08"):
@@ -680,28 +680,28 @@ rule compile_non_10_5_pooled_mosdepth_report_hisat2:
 				family="PD35"
 			new_line = short_sample_ID + "\t" + family + "\t"
 			open_log.write("family is:\t" + family + "\n")
-			
+
 			for depth_line in curr_mosdepth:
 				open_log.write("depth_line is:\t" + depth_line + "\n")
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-				
+
 				open_log.write("region is:\t" + region + "\n")
 				open_log.write("mean_covg is:\t" + mean_covg + "\n")
 
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
-			sample_lines.append(new_line)	
+			sample_lines.append(new_line)
 			curr_mosdepth.close()
-		
+
 			header_line_finished=1
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
 			all_sample.write(line + "\n")
 		all_sample.close()
-		open_log.close() 
+		open_log.close()
 
 rule compile_10_5_megs_report_hisat2:
 	input:
@@ -725,14 +725,14 @@ rule compile_10_5_megs_report_hisat2:
 			curr_filename = "mosdepth/hisat2/" + long_sample_ID + ".regions.bed"
 			curr_mosdepth = open(curr_filename,'r')
 			tmp = curr_mosdepth.readline()
-			
+
 			new_line = short_sample_ID + "\t10_5_meg\t"
-	
-			line_count = 0	
+
+			line_count = 0
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-				
+
 				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
@@ -763,7 +763,7 @@ rule compile_10_5_prog_report_hisat2:
 		header_line_finished = 0
 		sample_lines = []
 		open_log = open(log.filename,'w')
-	
+
 		for l in open_list:
 			short_sample_ID = l.split('/')[10].split('_i')[0]
 			long_sample_ID = l.split('/')[10].split('.')[0]
@@ -771,23 +771,23 @@ rule compile_10_5_prog_report_hisat2:
 			curr_filename = "mosdepth/hisat2/" + long_sample_ID + ".regions.bed"
 			curr_mosdepth = open(curr_filename,'r')
 			tmp = curr_mosdepth.readline()
-			
+
 			new_line = short_sample_ID + "\t10_5_prog\t"
-		
-			line_counter = 0	
+
+			line_counter = 0
 			for depth_line in curr_mosdepth:
 				region = depth_line.strip().split("\t")[0]
 				mean_covg = depth_line.strip().split("\t")[3]
-		
-				if(header_line_finished == 0):	
+
+				if(header_line_finished == 0):
 					header_line = header_line + region + "_mean_covg\t"
 				new_line = new_line + mean_covg + "\t"
 				line_counter = line_counter + 1
 			sample_lines.append(new_line)
 			curr_mosdepth.close()
 			open_log.write("this file:\t" + curr_filename + " had this many lines:\t" + str(line_counter) + "\n")
-	
-			header_line_finished = 1	
+
+			header_line_finished = 1
 		all_sample = open(output.filename,'w')
 		all_sample.write(header_line + "\n")
 		for line in sample_lines:
@@ -811,7 +811,7 @@ rule report:
 		report("""
 		A first test of a structural variant calling workflow
 		=====================================================
-		
+
 		Reads were mapped to the P.nigra
 		reference genome and variants were called jointly with
 		gatk unified genotyper.
@@ -819,6 +819,3 @@ rule report:
 		This resulted in {n_calls} variants (see Table T1_).
 		Benchmark results for BWA can be found in the tables.
 		""", output[0], T1=input)
-
-
-

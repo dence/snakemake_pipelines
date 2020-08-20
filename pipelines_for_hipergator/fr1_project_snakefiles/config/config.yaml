@@ -1,0 +1,18 @@
+#Daniel Ence
+#08/20/2020
+samples: config/samples.tsv
+units: config/units.tsv
+
+resources:
+    ref:
+      V1_01:
+        full: /blue/kirst/share/Genomes/Ptaeda_v101/ptaeda.v1.01.scaffolds.fasta
+        custom: /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta
+      V2_01:
+        full: /blue/kirst/share/Genomes/Ptaeda_v201/Lp.v2.01.fasta
+        custom: /blue/kirst/d.ence/ref_genomes/loblolly_pine/V2_1/custom_ref_for_Fr1/Lp.v2.01.seqs_with_probes.with_transdecoder_with_probes.fasta
+
+#things maybe to add
+#stuff for PCA of samples
+#stuff for scatter plots
+#Parameters related to annotation of variants?
