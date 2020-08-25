@@ -1,0 +1,68 @@
+#Daniel ence
+#08/20/2020
+
+include: "rules/common.smk"
+include: "rules/trim.smk"
+include: "rules/fastqc.smk"
+
+#rule all:
+#    input:
+#        "reports/dummy_report.html"
+
+#rule dummy_report:
+#    input:
+#        get_fastqs
+#    output:
+#        "reports/dummy_report.html"
+#    run:
+#        from snakemake.utils import report
+#
+#        report("""
+#        A first test of an alignment and variant calling pipeline for Fr1 data. T1_
+#        """,output[0],T1=input)
+
+def all_input(wildcards):
+    """
+    Function defining all requested inputs for the rule all (below).
+    """
+
+    wanted_input = []
+    wanted_input.extend(
+        expand(
+            pd.read_csv(config["units"], sep="\t", dtype=str)["fq1"]
+        )
+    )
+
+    wanted_input.extend(
+        expand(
+            pd.read_csv(config["units"], sep="\t", dtype=str)["fq2"]
+        )
+
+    )
+
+    wanted_input.extend(
+        expand(
+            [
+                "results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R1.fastq.gz",
+                "results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R2.fastq.gz"
+            ],
+                sample=units["sample"],unit=units["unit"]
+        )
+
+    )
+
+    wanted_input.extend(
+        expand(
+            [
+                "results/fastqc_out/post_trim/{sample}-{unit}/"
+            ],
+                sample=units["sample"],unit=units["unit"]
+        )
+
+    )
+
+    return wanted_input
+
+
+rule all:
+    input: all_input
