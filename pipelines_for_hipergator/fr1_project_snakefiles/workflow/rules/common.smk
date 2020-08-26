@@ -74,7 +74,7 @@ def get_trimmed(wildcards):
     if not is_single_end(**wildcards):
         # paired-end sample
         return expand("results/trimmed/{sample}-{unit}.{group}.fastq.gz",
-                      group=[1, 2], **wildcards)
+                      group=["R1", "R2"], **wildcards)
     # single end sample
     return expand("results/trimmed/{sample}-{unit}.fastq.gz", **wildcards)
 
