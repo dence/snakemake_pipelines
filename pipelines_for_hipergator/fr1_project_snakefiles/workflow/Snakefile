@@ -43,6 +43,17 @@ def all_input(wildcards):
     wanted_input.extend(
         expand(
             [
+                "results/logs/fastqc_pre_out/{sample}-{unit}.log"
+            ],
+                sample=units["sample"],unit=units["unit"]
+
+        )
+
+    )
+
+    wanted_input.extend(
+        expand(
+            [
                 "results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R1.fastq.gz",
                 "results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R2.fastq.gz"
             ],
