@@ -1,7 +1,7 @@
 #Daniel Ence
 #08/20/2020
-samples: /home/d.ence/applications/snakemake_pipelines/pipelines_for_hipergator/fr1_project_snakefiles/config/samples.tsv
-units: /home/d.ence/applications/snakemake_pipelines/pipelines_for_hipergator/fr1_project_snakefiles/config/units.tsv
+samples: /home/d.ence/applications/snakemake_pipelines/pipelines_for_hipergator/fr1_project_snakefiles/config/test_samples.tsv
+units: /home/d.ence/applications/snakemake_pipelines/pipelines_for_hipergator/fr1_project_snakefiles/config/test_units.tsv
 
 resources:
     ref:
@@ -19,6 +19,8 @@ settings:
         "V1_01"
     full_or_custom:
         "custom"
+    mosaik_seq_param:
+        "illumina"
 
 #things maybe to add
 #stuff for PCA of samples
