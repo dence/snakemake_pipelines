@@ -4,8 +4,8 @@ rule trim_reads:
 	input:
 		get_fastqs
 	output:
-		fq1=temp("results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R1.fastq.gz"),
-		fq2=temp("results/trimmed_reads/{sample}-{unit}/{sample}-{unit}.trimmed.R2.fastq.gz")
+		fq1=temp("results/trimmed_reads/{sample}-{unit}.trimmed.R1.fastq.gz"),
+		fq2=temp("results/trimmed_reads/{sample}-{unit}.trimmed.R2.fastq.gz")
 	log:
 		"results/logs/cutadapt/{sample}-{unit}.log"
 	benchmark:
