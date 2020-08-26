@@ -5,7 +5,7 @@ rule bwa_mem_align:
 		sample="{sample}-{unit}",
 		ref=get_reference
 	output:
-		temp("results/mapped_bwamem/{sample}-{unit}.bam")
+		"results/mapped_bwamem/{sample}-{unit}.bam"
 	log:
 		"logs/bwa_mem/{sample}-{unit}.bwa_mem.log"
 	shell:

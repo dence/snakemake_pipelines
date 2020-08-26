@@ -1,6 +1,6 @@
 rule samtools_index_rmduped:
 	input:
-		"rmduped{sample}-{unit}.sorted.rmdup.bam"
+		"rmduped/{sample}-{unit}.sorted.rmdup.bam"
 	output:
 		"rmduped/{sample}-{unit}.sorted.rmdup.bam.bai"
 	log:
