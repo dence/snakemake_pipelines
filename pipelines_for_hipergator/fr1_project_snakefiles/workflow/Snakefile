@@ -54,8 +54,8 @@ def all_input(wildcards):
     wanted_input.extend(
         expand(
             [
-                "results/trimmed/{sample}-{unit}/{sample}-{unit}.trimmed.R1.fastq.gz",
-                "results/trimmed/{sample}-{unit}/{sample}-{unit}.trimmed.R2.fastq.gz"
+                "results/trimmed/{sample}-{unit}.trimmed.R1.fastq.gz",
+                "results/trimmed/{sample}-{unit}.trimmed.R2.fastq.gz"
             ],
                 sample=units["sample"],unit=units["unit"]
         )
