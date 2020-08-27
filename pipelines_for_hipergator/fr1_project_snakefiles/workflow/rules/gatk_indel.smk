@@ -15,8 +15,8 @@ rule gatk_indel_creator:
 
 rule gatk_indel_realign:
 	input:
-		bam="results/mduped/{sample}-{unit}.sorted.rmdup.bam",
-		bai="results/mduped/{sample}-{unit}.sorted.rmdup.bam.bai",
+		bam="results/rmduped/{sample}-{unit}.sorted.rmdup.bam",
+		bai="results/rmduped/{sample}-{unit}.sorted.rmdup.bam.bai",
 		interval="results/realigner_intervals/{sample}-{unit}.intervals"
 	output:
 		"results/realigned/{sample}-{unit}.sorted.rmdup.realigned.bam"
