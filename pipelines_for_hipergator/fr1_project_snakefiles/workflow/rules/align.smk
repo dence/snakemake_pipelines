@@ -7,7 +7,7 @@ rule bwa_mem_align:
 		lane="{unit}",
 		ref=get_reference
 	output:
-		"results/" + config["settings"]["aligner"] + "_mapped/{sample}-{unit}.bam"
+		"results/mapped/{sample}-{unit}.bam"
 	log:
 		"logs/bwa_mem/{sample}-{unit}.bwa_mem.log"
 	shell:
