@@ -2,7 +2,7 @@ rule samtools_index_rmduped:
 	input:
 		"results/rmduped/{sample}-{unit}.sorted.rmdup.bam"
 	output:
-		"results/mduped/{sample}-{unit}.sorted.rmdup.bam.bai"
+		"results/rmduped/{sample}-{unit}.sorted.rmdup.bam.bai"
 	log:
 		"logs/samtools_index_sorted.{sample}-{unit}.log"
 	benchmark:
