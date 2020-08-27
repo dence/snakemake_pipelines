@@ -89,7 +89,7 @@ def all_input(wildcards):
     wanted_input.extend(
         expand(
             [
-                "realigned/{sample}-{unit}.sorted.rmdup.realigned.bam.bai"
+                "results/realigned/{sample}-{unit}.sorted.rmdup.realigned.bam.bai"
             ],
                 sample=units["sample"],unit=units["unit"]
 
