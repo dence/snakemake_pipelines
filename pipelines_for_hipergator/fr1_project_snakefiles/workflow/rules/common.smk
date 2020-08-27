@@ -22,9 +22,8 @@ units.index = units.index.set_levels(
     [i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
-curr_reference = ""
-
 #stuff to set the correct reference version for the pipeline
+curr_reference = ""
 if(config["settings"]["ref_version"] == "V1_01"):
     if(config["settings"]["full_or_custom"] == "custom"):
         curr_reference = config["resources"]["ref"]["V1_01"]["custom"]
@@ -35,7 +34,6 @@ elif(config["settings"]["ref_version"] == "V2_01"):
         curr_reference = config["resources"]["ref"]["V2_01"]["custom"]
     elif(config["settings"]["full_or_custom"] == "full"):
         curr_reference = config["resources"]["ref"]["V2_01"]["full"]
-
 
 report: "../report/workflow.rst"
 
@@ -78,14 +76,9 @@ def get_trimmed(wildcards):
     # single end sample
     return expand("results/trimmed/{sample}-{unit}.fastq.gz", **wildcards)
 
-def get_bams(wildcards):
-    return expand("results/mapped_bwamem/{sample}-{unit}.bam",**wildcards)
-
-def get_sorted(wildcards):
-    return expand("results/sorted/{sample}-{unit}.bam",**wildcards)
-
-def get_realigned(wildcards):
-    return  expand("results/realigned/{sample}-{unit}.sorted.rmduped.realigned.bam",**wildcards)
+def get_sample_subset(target_subset):
+    what_is_it = samples.loc[samples['sample_type'] == target_subset]
+    return what_is_it['sample'].to_list()
 
 def get_reference(wildcards):
     return curr_reference
