@@ -1,6 +1,6 @@
 rule samtools_sort_bwa_mem:
 	input:
-        "results/mapped_bwamem/{sample}-{unit}.bam"
+        expand("results/mapped_bwamem/{sample}-{unit}.bam")
 	output:
 		temp("results/sorted/{sample}-{unit}.sorted.bam")
 	log:
