@@ -1,11 +1,11 @@
 rule samtools_rmdup:
 	input:
-		"results/sorted/{sample}-{unit}.sorted.bam"
+		"results/sorted/{sample}.sorted.bam"
 	output:
-		"results/rmduped/{sample}-{unit}.sorted.rmdup.bam"
+		"results/rmduped/{sample}.sorted.rmdup.bam"
 	log:
-		"logs/samtools_rmdup/{sample}-{unit}.log"
+		"logs/samtools_rmdup/{sample}.log"
 	benchmark:
-		"benchmarks/{sample}-{unit}.rmdup.benchmark.txt"
+		"benchmarks/{sample}.rmdup.benchmark.txt"
 	shell:
 		"module load samtools; samtools rmdup {input} {output}"

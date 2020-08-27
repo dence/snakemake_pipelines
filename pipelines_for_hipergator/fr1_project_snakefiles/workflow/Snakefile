@@ -5,29 +5,11 @@ include: "rules/common.smk"
 include: "rules/trim.smk"
 include: "rules/fastqc.smk"
 include: "rules/align.smk"
-#include: "rules/samtools_sort.smk"
-#include: "rules/samtools_rmdup.smk"
-#include: "rules/samtools_index.smk"
-#include: "rules/gatk_indel.smk"
-
-
-
-
-#rule all:
-#    input:
-#        "reports/dummy_report.html"
-
-#rule dummy_report:
-#    input:
-#        get_fastqs
-#    output:
-#        "reports/dummy_report.html"
-#    run:
-#        from snakemake.utils import report
-#
-#        report("""
-#        A first test of an alignment and variant calling pipeline for Fr1 data. T1_
-#        """,output[0],T1=input)
+include: "rules/merge_bams.smk"
+include: "rules/samtools_sort.smk"
+include: "rules/samtools_rmdup.smk"
+include: "rules/samtools_index.smk"
+include: "rules/gatk_indel.smk"
 
 def all_input(wildcards):
     """
@@ -79,16 +61,15 @@ def all_input(wildcards):
         )
     )
 
-    #wanted_input.extend(
-    #    expand(
-    #        [
-    #            "results/sorted/{sample}-{unit}.sorted.bam"
-    #        ],
-    #            sample=units["sample"],unit=units["unit"]
-    #
-    #    )
+    wanted_input.extend(
+        expand(
+            [
+                "results/realigned/{sample}.sorted.rmdup.realigned.bam.bai"
+            ],
+                sample=units["sample"],unit=units["unit"]
+        )
 
-    #)
+    )
 
     return wanted_input
 
