@@ -78,6 +78,14 @@ def get_trimmed(wildcards):
     # single end sample
     return expand("results/trimmed/{sample}-{unit}.fastq.gz", **wildcards)
 
+def get_bams(wildcards):
+    return expand("results/mapped_bwamem/{sample}-{unit}.bam",**wildcards)
+
+def get_sorted(wildcards):
+    return expand("results/sorted/{sample}-{unit}.bam",**wildcards)
+
+def get_realigned(wildcards):
+    return  expand("results/realigned/{sample}-{unit}.sorted.rmduped.realigned.bam",**wildcards)
 
 def get_reference(wildcards):
     return curr_reference
