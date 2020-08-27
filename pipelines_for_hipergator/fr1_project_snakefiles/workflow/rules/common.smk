@@ -82,6 +82,9 @@ def get_trimmed(wildcards):
 def get_reference(wildcards):
     return curr_reference
 
+def get_mosaik_reference(wildcards):
+    return curr_reference + ".mosaik"
+
 def get_bioc_species_pkg(wildcards):
     """Get the package bioconductor package name for the the species in config.yaml"""
     species_letters = config["resources"]["ref"]["species"][0:2].capitalize()

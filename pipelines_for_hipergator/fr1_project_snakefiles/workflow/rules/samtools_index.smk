@@ -1,8 +1,8 @@
 rule samtools_index_rmduped:
 	input:
-		"rmduped/{sample}-{unit}.sorted.rmdup.bam"
+		"results/rmduped/{sample}-{unit}.sorted.rmdup.bam"
 	output:
-		"rmduped/{sample}-{unit}.sorted.rmdup.bam.bai"
+		"results/mduped/{sample}-{unit}.sorted.rmdup.bam.bai"
 	log:
 		"logs/samtools_index_sorted.{sample}-{unit}.log"
 	benchmark:
@@ -12,9 +12,9 @@ rule samtools_index_rmduped:
 
 rule samtools_index_realigned:
 	input:
-		"realigned/{sample}-{unit}.sorted.rmdup.realigned.bam"
+		"results/realigned/{sample}-{unit}.sorted.rmdup.realigned.bam"
 	output:
-		"realigned/{sample}-{unit}.sorted.rmdup.realigned.bam.bai"
+		"results/realigned/{sample}-{unit}.sorted.rmdup.realigned.bam.bai"
 	log:
 		"logs/samtools_index_realigned.{sample}-{unit}.log"
 	benchmark:

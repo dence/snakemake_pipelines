@@ -1,9 +1,9 @@
 rule gatk_indel_creator:
 	input:
-		bam="rmduped/{sample}-{unit}.sorted.rmdup.bam",
-		bai="rmduped/{sample}-{unit}.sorted.rmdup.bam.bai"
+		bam="results/rmduped/{sample}-{unit}.sorted.rmdup.bam",
+		bai="results/rmduped/{sample}-{unit}.sorted.rmdup.bam.bai"
 	output:
-		temp("realigner_intervals/{sample}-{unit}.intervals")
+		temp("results/realigner_intervals/{sample}-{unit}.intervals")
 	params:
 		ref=get_reference
 	log:
@@ -15,11 +15,11 @@ rule gatk_indel_creator:
 
 rule gatk_indel_realign:
 	input:
-		bam="rmduped/{sample}-{unit}.sorted.rmdup.bam",
-		bai="rmduped/{sample}-{unit}.sorted.rmdup.bam.bai",
+		bam="results/mduped/{sample}-{unit}.sorted.rmdup.bam",
+		bai="results/mduped/{sample}-{unit}.sorted.rmdup.bam.bai",
 		interval="realigner_intervals/{sample}-{unit}.intervals"
 	output:
-		"realigned/{sample}-{unit}.sorted.rmdup.realigned.bam"
+		"results/realigned/{sample}-{unit}.sorted.rmdup.realigned.bam"
 	params:
 		ref=get_reference
 	log:
