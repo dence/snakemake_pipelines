@@ -99,7 +99,14 @@
 	"freebayes_haploid" :
 	{
 		"time": "96:00:00",
-		"mem": "5gb"
+		"mem": "5gb",
+		"c": "10"
+	},
+	"freebayes_diploid" :
+	{
+		"time": "96:00:00",
+		"mem": "20gb",
+		"c": "10"
 	},
 	"soap_config":
 	{
