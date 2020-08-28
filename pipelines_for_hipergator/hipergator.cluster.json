@@ -41,10 +41,10 @@
 		"mem": "50gb",
 		"c": "20"
 	},
-	"bwamem_align" :
+	"bwa_mem_align" :
 	{
-		"time": "40:00:00",
-		"mem": "5gb",
+		"time": "10:00:00",
+		"mem": "10gb",
 		"c": "10"
 	},
 	"bowtie2_align" :
@@ -123,7 +123,7 @@
 		"time": "72:00:00",
 		"mem": "15gb"
 	},
-	"merge_lane_bams":
+	"merge_lane":
 	{
 		"time": "24:00:00",
 		"mem": "20gb"
