@@ -96,3 +96,30 @@ def get_bioc_pkg_path(wildcards):
 
 def is_activated(config_element):
     return config_element['activate'] in {"true","True"}
+
+import os
+
+def get_bam_list(sample_type_list):
+    bam_list = []
+    for sample_type in sample_type_list:
+        bam_list.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset(sample_type)))
+    return bam_list
+
+def get_bai_list(sample_type_list):
+    bai_list = []
+    for sample_type in sample_type_list:
+        bai_list.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset(sample_type)))
+    return bai_list
+
+def make_bam_list_file(prefix,bam_list_obj):
+    if not os.path.exists("./results/"):
+        os.makedirs("./results/")
+
+    list_filename="results/" + prefix + ".list.txt"
+    list_file = open(list_filename,'w')
+
+    for bam_file in bam_list_obj:
+        list_file.write(bam_file + "\n")
+
+    list_file.close()
+    return list_filename

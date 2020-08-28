@@ -1,37 +1,3 @@
-import os
-
-def get_bam_list(sample_type_list):
-    bam_list = []
-    for sample_type in sample_type_list:
-        bam_list.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("sample_type")))
-    return bam_list
-
-def get_bai_list(sample_type_list):
-    bai_list = []
-    for sample_type in sample_type_list:
-        bai_list.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("sample_type")))
-    return bai_list
-
-def make_bam_list_file(prefix,bam_list_obj):
-    #print("in make_bam_list")
-    #print(bam_list_obj)
-    #print every bam from bam_list_obj to a list in the results dir
-    #use prefix to name the list files
-    #return the list filename
-
-    #need to add a line to check for "results" dir and
-    #make the dir if not there
-    if not os.path.exists("./results/"):
-        os.makedirs("./results/")
-
-    list_filename="results/" + prefix + ".list.txt"
-    list_file = open(list_filename,'w')
-
-    for bam_file in bam_list_obj:
-        list_file.write(bam_file)
-
-    list_file.close()
-    return list_filename
 
 rule freebayes_haploid:
     input:
@@ -41,13 +7,15 @@ rule freebayes_haploid:
         ref=get_reference
     params:
         targets="--targets " + config["resources"]["intervals"],
-        settings="-pvar 0.75 -theta 0.01 -indels -mnps -min-alternate-fraction 0.8 -min-alternate-count 1 "
+        settings="--pvar 0.75 --theta 0.01 --min-alternate-fraction 0.8 --min-alternate-count 1 "
     log:
         "logs/freebayes/Fr1_megs.freebayes.log"
     output:
         "results/calls/freebayes/Fr1_megs.freebayes.vcf"
+    threads:
+        10
     shell:
-        "unset TMPDIR; module load freebayes/1.3.1; freebayes-v1.3.1 {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
 
 rule freebayes_diploid:
     input:
@@ -55,11 +23,14 @@ rule freebayes_diploid:
         bai=get_bai_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"]),
         bam_list=make_bam_list_file("diploid", get_bam_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"])),
         ref=get_reference
-
-
+    params:
+        targets="--targets " + config["resources"]["intervals"],
+        settings="--pvar 0.75 --theta 0.01 --min-alternate-fraction 0.8 --min-alternate-count 1 "
     log:
         "logs/freebayes/Fr1_prog.freebayes.log"
     output:
-        "calls/freebayes/Fr1_prog.hisat2.freebayes.vcf"
+        "results/calls/freebayes/Fr1_diploid.freebayes.vcf"
+    threads:
+        10
     shell:
-        "unset TMPDIR; module load freebayes/1.3.1; freebayes-v1.3.1 {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
