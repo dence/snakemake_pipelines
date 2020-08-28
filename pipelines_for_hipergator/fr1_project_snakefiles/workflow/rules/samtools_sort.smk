@@ -1,15 +1,17 @@
-rule samtools_sort_bwa_mem:
+rule samtools_sort:
 	input:
-        "results/RG_replaced_bams/{sample}.bwa_mem.sorted.rmdup.merged.bam"
+		"results/RG_replaced_bams/{sample}.merged.bam"
 	output:
 		temp("results/sorted/{sample}.sorted.bam")
 	log:
 		"logs/samtools_sort/{sample}.log"
 	benchmark:
 		"benchmarks/{sample}.sort.benchmark.txt"
+	params:
+		"-T sorted_reads/{sample}"
 	threads: 4
 	shell:
-		"module load samtools; samtools sort --threads {threads} -T sorted_reads/{sample}-{unit} -O bam {input} > {output}"
+		"unset TMPDIR; module load samtools; samtools sort --threads {threads} {params} -O bam {input} > {output}"
 
 
 #def get_bams(wildcards):

@@ -11,7 +11,7 @@ rule gatk_indel_creator:
 	benchmark:
 		"benchmarks/{sample}.intervals.benchmark.txt"
 	shell:
-		"module load gatk;  java -jar -Xmx9g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator --filter_reads_with_N_cigar -I {input.bam} -o {output} -R {params.ref}"
+		"unset TMPDIR; module load gatk;  java -jar -Xmx9g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T RealignerTargetCreator --filter_reads_with_N_cigar -I {input.bam} -o {output} -R {params.ref}"
 
 rule gatk_indel_realign:
 	input:
@@ -19,7 +19,7 @@ rule gatk_indel_realign:
 		bai="results/rmduped/{sample}.sorted.rmdup.bam.bai",
 		interval="results/realigner_intervals/{sample}.intervals"
 	output:
-		"results/realigned/{sample}.sorted.rmdup.realigned.bam"
+		"results/realigned/{sample}.realigned.bam"
 	params:
 		ref=get_reference
 	log:
@@ -27,4 +27,4 @@ rule gatk_indel_realign:
 	benchmark:
 		"benchmarks/{sample}.intervals.benchmark.txt"
 	shell:
-		"module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner --filter_reads_with_N_cigar -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output} &> {log}"
+		"unset TMPDIR; module load gatk; java -jar -Xmx4g /apps/gatk/3.7.0/GenomeAnalysisTK.jar -T IndelRealigner --filter_reads_with_N_cigar -R {params.ref} -I {input.bam} -targetIntervals {input.interval} -o {output} &> {log}"

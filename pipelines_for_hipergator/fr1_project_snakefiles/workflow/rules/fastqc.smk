@@ -13,7 +13,7 @@ rule pretrim_fastqc:
 	benchmark:
 		"benchmarks/{sample}-{unit}.fastqc.benchmark.txt"
 	shell:
-		"module load fastqc ; fastqc -f fastq -o {output.out} {input} &> {log}"
+		"unset TMPDIR; module load fastqc ; fastqc -f fastq -o {output.out} {input} &> {log}"
 
 rule posttrim_fastqc:
 	input:
@@ -26,4 +26,4 @@ rule posttrim_fastqc:
 	benchmark:
 		"benchmarks/{sample}-{unit}.fastqc.benchmark.txt"
 	shell:
-		"module load fastqc ; fastqc -f fastq -o {output[0]} {input} &> {log}"
+		"unset TMPDIR; module load fastqc ; fastqc -f fastq -o {output[0]} {input} &> {log}"

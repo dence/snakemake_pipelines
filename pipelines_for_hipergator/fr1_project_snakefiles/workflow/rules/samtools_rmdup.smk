@@ -8,4 +8,4 @@ rule samtools_rmdup:
 	benchmark:
 		"benchmarks/{sample}.rmdup.benchmark.txt"
 	shell:
-		"module load samtools; samtools rmdup {input} {output}"
+		"unset TMPDIR; module load samtools; samtools rmdup {input} {output}"

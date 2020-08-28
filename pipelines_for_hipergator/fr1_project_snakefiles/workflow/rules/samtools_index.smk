@@ -8,16 +8,28 @@ rule samtools_index_rmduped:
 	benchmark:
 		"benchmarks/{sample}.index_sorted.benchmark.txt"
 	shell:
-		"module load samtools; samtools index {input}"
+		"unset TMPDIR; module load samtools; samtools index {input}"
+
+rule samtools_index_RG_replaced:
+	input:
+		"results/RG_replaced_bams/{sample}.merged.bam"
+	output:
+		"results/RG_replaced_bams/{sample}.merged.bam.bai"
+	log:
+		"logs/samtools_index_RG_replaced.{sample}.log"
+	benchmark:
+		"benchmarks/{sample}.index_RG_replaced.benchmark.txt"
+	shell:
+		"unset TMPDIR; module load samtools; samtools index {input}"
 
 rule samtools_index_realigned:
 	input:
-		"results/realigned/{sample}.sorted.rmdup.realigned.bam"		
+		"results/realigned/{sample}.realigned.bam"
 	output:
-		"results/realigned/{sample}.sorted.rmdup.realigned.bam.bai"
+		"results/realigned/{sample}.realigned.bam.bai"
 	log:
 		"logs/samtools_index_realigned.{sample}.log"
 	benchmark:
 		"benchmarks/{sample}.index_realigned.benchmark.txt"
 	shell:
-		"module load samtools; samtools index {input}"
+		"unset TMPDIR; module load samtools; samtools index {input}"

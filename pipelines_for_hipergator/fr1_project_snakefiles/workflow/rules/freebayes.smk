@@ -1,6 +1,6 @@
 def make_bam_list(prefix,bam_list_obj):
-    print("in make_bam_list")
-    print(bam_list_obj)
+    #print("in make_bam_list")
+    #print(bam_list_obj)
     #print every bam from bam_list_obj to a list in the results dir
     #use prefix to name the list files
     #return the list filename
@@ -28,4 +28,4 @@ rule freebayes_haploid:
     output:
         "results/calls/freebayes/Fr1_megs.freebayes.vcf"
     shell:
-        "module load freebayes/1.3.2; freebayes {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.2; freebayes {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"

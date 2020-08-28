@@ -10,4 +10,4 @@ rule mosdepth_bwa_mem:
     log:
         "logs/mosdepth//{sample}.mosdepth.log"
     shell:
-        "module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"
+        "unset TMPDIR; module load mosdepth; mosdepth {params.options} {input.bam} ; gunzip {params.gz}"

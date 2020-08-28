@@ -10,9 +10,10 @@ rule bwa_mem_align:
 		"results/mapped/{sample}-{unit}.bam"
 	log:
 		"logs/bwa_mem/{sample}-{unit}.bwa_mem.log"
+	threads: 10
 	shell:
-		"module load bwa/0.7.17 ; bwa mem {params.ref} "
-		+ "-R '@RG\\tID:{params.ID}\\tSM:{params.sample}\\tPU:{params.lane}\\tPL:ILLUMINA'"
+		"unset TMPDIR; module load bwa/0.7.17 ; bwa mem {params.ref} "
+		+ "-t {threads} -R '@RG\\tID:{params.ID}\\tSM:{params.sample}\\tPU:{params.lane}\\tPL:ILLUMINA'"
 		+ "{input[0]} {input[1]} > {output} 2> {log}"
 
 

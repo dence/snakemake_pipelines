@@ -11,4 +11,4 @@ rule trim_reads:
 	benchmark:
 		"results/benchmarks/{sample}-{unit}.fastqc.benchmark.txt"
 	shell:
-		"module load python/2.7.14; module load gcc/5.2.0; module load cutadapt; cutadapt -u 10 -U 10 -q30,30 --minimum-length=50 -o {output.fq1} -p {output.fq2} {input[0]} {input[1]} &> {log}"
+		"unset TMPDIR; module load python/2.7.14; module load gcc/5.2.0; module load cutadapt; cutadapt -u 10 -U 10 -q30,30 --minimum-length=50 -o {output.fq1} -p {output.fq2} {input[0]} {input[1]} &> {log}"
