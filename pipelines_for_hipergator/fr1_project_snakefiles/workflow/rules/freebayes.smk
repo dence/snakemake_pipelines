@@ -41,7 +41,7 @@ rule freebayes_haploid:
     input:
         bam=get_bam_list(["10_5_megagametophyte"]),
         bai=get_bai_list(["10_5_megagametophyte"]),
-        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"]),
+        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"])),
         ref=get_reference
 
     params:
@@ -58,7 +58,7 @@ rule freebayes_diploid:
 	input:
         bam=get_bam_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"]),
         bai=get_bai_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"]),
-        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"]),
+        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"])),
         ref=get_reference
 
         bam_list=make_bam_list("diploid", /
