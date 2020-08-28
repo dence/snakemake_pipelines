@@ -28,4 +28,4 @@ rule freebayes_haploid:
     output:
         "results/calls/freebayes/Fr1_megs.freebayes.vcf"
     shell:
-        "unset TMPDIR; module load freebayes/1.3.2; freebayes {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.1; freebayes-v1.3.1. --ploidy 1 {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
