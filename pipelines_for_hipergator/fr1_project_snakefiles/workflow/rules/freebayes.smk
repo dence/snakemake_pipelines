@@ -1,4 +1,22 @@
-def make_bam_list(prefix,bam_list_obj):
+import os
+
+def get_bam_list(sample_type_list):
+    bam_list = []
+    for sample_type in sample_type_list:
+        bam_list.extend(expand("results/realigned/{sample}.realigned.bam", /
+        sample=get_sample_subset("sample_type"))
+    return bam_list
+
+def get_bai_list(sample_type_list):
+    bam_list = []
+    for sample_type in sample_type_list:
+        bam_list.extend(expand("results/realigned/{sample}.realigned.bam.bai", /
+        sample=get_sample_subset("sample_type"))
+    return bam_list
+
+
+
+def make_bam_list_file(prefix,bam_list_obj):
     #print("in make_bam_list")
     #print(bam_list_obj)
     #print every bam from bam_list_obj to a list in the results dir
@@ -7,6 +25,9 @@ def make_bam_list(prefix,bam_list_obj):
 
     #need to add a line to check for "results" dir and
     #make the dir if not there
+    if not os.path.exists("./results/"):
+        os.makedirs("./results/")
+
     list_filename="results/" + prefix + ".list.txt"
     list_file = open(list_filename,'w')
 
@@ -18,9 +39,9 @@ def make_bam_list(prefix,bam_list_obj):
 
 rule freebayes_haploid:
     input:
-        bam=expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("10_5_megagametophyte")),
-        bai=expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("10_5_megagametophyte")),
-        bam_list=make_bam_list("10_5_megagametophyte", expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("10_5_megagametophyte"))),
+        bam=get_bam_list(["10_5_megagametophyte"]),
+        bai=get_bai_list(["10_5_megagametophyte"]),
+        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"]),
         ref=get_reference
 
     params:
@@ -35,21 +56,13 @@ rule freebayes_haploid:
 
 rule freebayes_diploid:
 	input:
-        bam=expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("10_5_megagametophyte")),
-        bam.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("20_1010")))
-        bam.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("elite_pine_family")))
-        bam.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("nongalled_10_5_prog")))
-        bam.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("galled_10_5_prog")))
-        bam.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("10_5_x_4_6664")))
+        bam=get_bam_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"]),
+        bai=get_bai_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"]),
+        bam_list=make_bam_list_file("10_5_megagametophyte", get_bam_list(["10_5_megagametophyte"]),
+        ref=get_reference
 
-        bai=expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("10_5_megagametophyte")),
-        bai.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("20_1010")))
-        bai.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("elite_pine_family")))
-        bai.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("nongalled_10_5_prog")))
-        bai.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("galled_10_5_prog")))
-        bai.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset("10_5_x_4_6664")))
-
-        bam_list=make_bam_list("10_5_megagametophyte", expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset("10_5_megagametophyte"))),
+        bam_list=make_bam_list("diploid", /
+        get_bam_list(["nongalled_10_5_prog","galled_10_5_prog","20_1010","elite_pine_family","10_5_x_4_6664"])),
         ref=get_reference
 	log:
 		"logs/freebayes/Fr1_prog.freebayes.log"
