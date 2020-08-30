@@ -4,22 +4,16 @@
 include: "rules/common.smk"
 include: "rules/trim.smk"
 include: "rules/fastqc.smk"
-
-#rule all:
-#    input:
-#        "reports/dummy_report.html"
-
-#rule dummy_report:
-#    input:
-#        get_fastqs
-#    output:
-#        "reports/dummy_report.html"
-#    run:
-#        from snakemake.utils import report
-#
-#        report("""
-#        A first test of an alignment and variant calling pipeline for Fr1 data. T1_
-#        """,output[0],T1=input)
+include: "rules/align.smk"
+include: "rules/merge_bams.smk"
+include: "rules/RG_replaced.smk"
+include: "rules/samtools_sort.smk"
+include: "rules/samtools_rmdup.smk"
+include: "rules/samtools_index.smk"
+include: "rules/gatk_indel.smk"
+include: "rules/freebayes.smk"
+include: "vcf_util.smk"
+include: "rules/mosdepth.smk"
 
 def all_input(wildcards):
     """
@@ -43,34 +37,16 @@ def all_input(wildcards):
     wanted_input.extend(
         expand(
             [
-                "results/logs/fastqc_pre_out/{sample}-{unit}.log"
+                "results/realigned/{sample}.realigned.bam.bai"
             ],
-                sample=units["sample"],unit=units["unit"]
-
+                sample=units["sample"]
         )
-
     )
 
-    wanted_input.extend(
-        expand(
-            [
-                "results/trimmed/{sample}-{unit}.trimmed.R1.fastq.gz",
-                "results/trimmed/{sample}-{unit}.trimmed.R2.fastq.gz"
-            ],
-                sample=units["sample"],unit=units["unit"]
-        )
+    wanted_input.extend(["results/calls/freebayes/Fr1_megs.freebayes.vcf"])
 
-    )
-
-    wanted_input.extend(
-        expand(
-            [
-                "results/fastqc_out/post_trim/{sample}-{unit}/"
-            ],
-                sample=units["sample"],unit=units["unit"]
-        )
-
-    )
+    wanted_input.extend(["results/calls/postprocessed/Fr1_megs.freebayes.postprocess.vcf"])
+    wanted_input.extend(["results/calls/postprocessed/Fr1_diploid.freebayes.postprocess.vcf"])
 
     return wanted_input
 

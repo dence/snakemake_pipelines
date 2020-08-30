@@ -1,0 +1,147 @@
+{
+	"__default__": {
+		"time": "24:00:00",
+		"N": "1",
+		"mem": "1gb",
+		"partition": "hpg1-compute",
+		"c": "1",
+		"qos": "kirst-b"
+	},
+	"trinity_genome_guided" :
+	{
+		"time": "240:00:00",
+		"N": "1",
+		"c": "10",
+		"mem": "70gb",
+		"qos": "kirst"
+	},
+	"dump_accessions" :
+	{
+		"time": "24:00:00",
+		"mem": "5gb"
+	},
+	"assemble_superreads" :
+	{
+		"mem": "50gb"
+	},
+	"tophat_supereads_align" :
+	{
+		"time": "20:00:00",
+		"mem": "5gb",
+		"c": "20"
+	},
+	"tophat_process_align" :
+	{
+		"mem": "50gb",
+		"c": "20",
+		"time": "48:00:00"
+	},
+	"tophat_raw_align" :
+	{
+		"mem": "50gb",
+		"c": "20"
+	},
+	"bwa_mem_align" :
+	{
+		"time": "10:00:00",
+		"mem": "10gb",
+		"c": "10"
+	},
+	"bowtie2_align" :
+	{
+		"time": "40:00:00",
+		"mem": "50gb",
+		"c": "4"
+	},
+	"hisat2_align" :
+	{
+		"time": "20:00:00",
+		"mem": "50gb",
+		"c": "4"
+	},
+	"samtools_sort" :
+	{
+		"time": "40:00:00",
+		"c": "1",
+		"mem": "5gb"
+	},
+	"samtools_rmdup" :
+	{
+		"time": "40:00:00",
+		"c": "1",
+		"mem": "5gb"
+	},
+	"samtools_sort_bams" :
+	{
+		"time": "40:00:00",
+		"mem": "5gb"
+	},
+	"samtools_sort_discordants" :
+	{
+		"time": "40:00:00",
+		"mem": "5gb"
+	},
+	"samtools_sort_splitters" :
+	{
+		"time": "40:00:00",
+		"mem": "5gb"
+	},
+	"gatk_indel_creator" :
+	{
+		"time": "40:00:00",
+		"mem": "10gb"
+	},
+	"gatk_indel_realign" :
+	{
+		"time": "40:00:00",
+		"mem": "5gb"
+	},
+	"freebayes_haploid" :
+	{
+		"time": "96:00:00",
+		"mem": "5gb",
+		"c": "10"
+	},
+	"freebayes_diploid" :
+	{
+		"time": "96:00:00",
+		"mem": "20gb",
+		"c": "10"
+	},
+	"soap_config":
+	{
+		"time": "00:10:00",
+		"c": "1",
+		"mem": "50mb",
+		"qos": "kirst-b"
+	},
+	"soapdenovo":
+	{
+		"time": "40:00:00",
+		"c": "1"
+	},
+	"haplotype_caller_unique_samples":
+	{
+		"time": "72:00:00",
+		"mem": "20gb"
+	},
+	"star_align":
+	{
+		"time": "72:00:00",
+		"mem": "15gb"
+	},
+	"merge_lane":
+	{
+		"time": "24:00:00",
+		"mem": "20gb"
+	},
+	"ReplaceRG_merged":
+	{
+		"mem": "5gb"
+	},
+	"merge_bams":
+	{
+		"time": "24:00:00",
+		"mem": "20gb"
+	}
+}

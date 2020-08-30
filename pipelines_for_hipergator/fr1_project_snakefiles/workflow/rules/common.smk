@@ -22,9 +22,8 @@ units.index = units.index.set_levels(
     [i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
-curr_reference = ""
-
 #stuff to set the correct reference version for the pipeline
+curr_reference = ""
 if(config["settings"]["ref_version"] == "V1_01"):
     if(config["settings"]["full_or_custom"] == "custom"):
         curr_reference = config["resources"]["ref"]["V1_01"]["custom"]
@@ -35,7 +34,6 @@ elif(config["settings"]["ref_version"] == "V2_01"):
         curr_reference = config["resources"]["ref"]["V2_01"]["custom"]
     elif(config["settings"]["full_or_custom"] == "full"):
         curr_reference = config["resources"]["ref"]["V2_01"]["full"]
-
 
 report: "../report/workflow.rst"
 
@@ -78,9 +76,15 @@ def get_trimmed(wildcards):
     # single end sample
     return expand("results/trimmed/{sample}-{unit}.fastq.gz", **wildcards)
 
+def get_sample_subset(target_subset):
+    what_is_it = samples.loc[samples['sample_type'] == target_subset]
+    return what_is_it['sample'].to_list()
 
 def get_reference(wildcards):
     return curr_reference
+
+def get_mosaik_reference(wildcards):
+    return curr_reference + ".mosaik"
 
 def get_bioc_species_pkg(wildcards):
     """Get the package bioconductor package name for the the species in config.yaml"""
@@ -92,3 +96,30 @@ def get_bioc_pkg_path(wildcards):
 
 def is_activated(config_element):
     return config_element['activate'] in {"true","True"}
+
+import os
+
+def get_bam_list(sample_type_list):
+    bam_list = []
+    for sample_type in sample_type_list:
+        bam_list.extend(expand("results/realigned/{sample}.realigned.bam", sample=get_sample_subset(sample_type)))
+    return bam_list
+
+def get_bai_list(sample_type_list):
+    bai_list = []
+    for sample_type in sample_type_list:
+        bai_list.extend(expand("results/realigned/{sample}.realigned.bam.bai", sample=get_sample_subset(sample_type)))
+    return bai_list
+
+def make_bam_list_file(prefix,bam_list_obj):
+    if not os.path.exists("./results/"):
+        os.makedirs("./results/")
+
+    list_filename="results/" + prefix + ".list.txt"
+    list_file = open(list_filename,'w')
+
+    for bam_file in bam_list_obj:
+        list_file.write(bam_file + "\n")
+
+    list_file.close()
+    return list_filename

@@ -19,6 +19,8 @@ settings:
         "V1_01"
     full_or_custom:
         "custom"
+    aligner:
+        "bwa_mem"
     mosaik_seq_param:
         "illumina"
 

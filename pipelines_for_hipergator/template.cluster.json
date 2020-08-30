@@ -1,0 +1,8 @@
+{
+	"__default__": {
+		"time": "4:00:00",
+		"N": "8",
+		"mem": "20gb",
+		"partition": "hpg1-compute"	
+	}
+}
