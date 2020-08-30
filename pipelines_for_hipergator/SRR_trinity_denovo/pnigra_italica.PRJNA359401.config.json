@@ -1,0 +1,51 @@
+{	"accession": ["PRJNA359401"],
+	"layout": ["F"],
+	"samples": {
+		"SRR5135726": ["SRR5135726"],
+		"SRR5135741": ["SRR5135741"],	
+		"SRR5135738": ["SRR5135738"],
+		"SRR5135729": ["SRR5135729"],
+		"SRR5135727": ["SRR5135727"],
+		"SRR5135728": ["SRR5135728"],
+		"SRR5135739": ["SRR5135739"],
+		"SRR5135742": ["SRR5135742"],
+		"SRR5135736": ["SRR5135736"],
+		"SRR5135750": ["SRR5135750"],
+		"SRR5135731": ["SRR5135731"],
+		"SRR5135732": ["SRR5135732"],
+		"SRR5135723": ["SRR5135723"],
+		"SRR5135725": ["SRR5135725"],
+		"SRR5135743": ["SRR5135743"],
+		"SRR5135748": ["SRR5135748"],
+		"SRR5135737": ["SRR5135737"],
+		"SRR5135749": ["SRR5135749"],
+		"SRR5135722": ["SRR5135722"],
+		"SRR5135733": ["SRR5135733"],
+		"SRR5135746": ["SRR5135746"],
+		"SRR5135747": ["SRR5135747"],
+		"SRR5135720": ["SRR5135720"],
+		"SRR5135721": ["SRR5135721"],
+		"SRR5135735": ["SRR5135735"],
+		"SRR5135730": ["SRR5135730"],
+		"SRR5135734": ["SRR5135734"],
+		"SRR5135745": ["SRR5135745"],
+		"SRR5135740": ["SRR5135740"],
+		"SRR5135718": ["SRR5135718"],
+		"SRR5135724": ["SRR5135724"],
+		"SRR5135717": ["SRR5135717"],
+		"SRR5135719": ["SRR5135719"],
+		"SRR5135744": ["SRR5135744"]
+	},
+	"reference": {
+		"Pop.trichocarpa": {
+			"v3": ["/ufrc/kirst/d.ence/ref_genomes/populus/ref_genomes/Potr/v3/Ptrichocarpa_v3.0_210.fa"]
+		},
+		"Pop.nigra": {
+			"old": ["/ufrc/kirst/d.ence/Pnigra_Sempervirens/ref_genomes/P.nigra/Consensus_71077-308_version0915-MER.fa"],
+			"supernova_CH": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.fasta"],
+			"supernova_CH_1": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.1.fasta"],
+			"supernova_CH_2": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_CH/CH_evergreen_100X_covg.2.fasta"],
+			"supernova_PA": ["/home/d.ence/projects/Pnigra_Sempervirens/EVRGREEN/supernova_ref_assembly/supernova_PA/PA_wildtype_91X_covg.fasta"]
+		}
+	}
+}
