@@ -16,7 +16,7 @@ rule compile_mosdepth_report_bwa_mem:
 	input:
 		mosdepths="results/mosdepth/{sample}.regions.bed"
 	output:
-		filename=expand("mosdepth/mosdepth{aligner}.report.txt",aligner=config["settings"]["aligner"])
+		filename=expand("mosdepth/mosdepth.{aligner}.report.txt",aligner=config["settings"]["aligner"])
 	log:
 	   expand("logs/mosdepth/mosdepth.{aligner}.report.log",aligner=config["settings"]["aligner"])
 	run:
