@@ -1,0 +1,381 @@
+"plant ID"	GH location	Gall	tissue	plate	column	row
+584	resistant rack 6	no gall	leaf	1	1	A
+777	resistant rack 6	no gall	leaf	1	1	B
+508	resistant rack 6	no gall	leaf	1	1	C
+575	resistant rack 6	no gall	leaf	1	1	D
+369	resistant rack 6	no gall	leaf	1	1	E
+1387	resistant rack 6	no gall	leaf	1	1	F
+19	resistant rack 6	no gall	leaf	1	1	G
+349	resistant rack 6	no gall	leaf	1	1	H
+465	resistant rack 6	no gall	leaf	1	2	A
+15	resistant rack 6	no gall	leaf	1	2	B
+1319	resistant rack 6	no gall	leaf	1	2	C
+185	resistant rack 6	no gall	leaf	1	2	D
+560	resistant rack 6	no gall	leaf	1	2	E
+167	resistant rack 6	no gall	leaf	1	2	F
+212	resistant rack 6	no gall	leaf	1	2	G
+561	resistant rack 6	no gall	leaf	1	2	H
+1465	resistant rack 6	no gall	leaf	1	3	A
+443	resistant rack 6	no gall	leaf	1	3	B
+1355	resistant rack 6	no gall	leaf	1	3	C
+1412	resistant rack 6	no gall	leaf	1	3	D
+510	resistant rack 6	no gall	leaf	1	3	E
+31	resistant rack 6	no gall	leaf	1	3	F
+83	resistant rack 6	no gall	leaf	1	3	G
+13	resistant rack 6	no gall	leaf	1	3	H
+564	resistant rack 6	no gall	leaf	1	4	A
+694	resistant rack 6	no gall	leaf	1	4	B
+883	resistant rack 6	no gall	leaf	1	4	C
+326	resistant rack 6	no gall	leaf	1	4	D
+124	resistant rack 6	no gall	leaf	1	4	E
+494	resistant rack 6	no gall	leaf	1	4	F
+93	resistant rack 6	no gall	leaf	1	4	G
+1007	resistant rack 6	no gall	leaf	1	4	H
+955	resistant rack 6	no gall	leaf	1	5	A
+1125	resistant rack 6	no gall	leaf	1	5	B
+325	resistant rack 6	no gall	leaf	1	5	C
+396	resistant rack 6	no gall	leaf	1	5	D
+45	resistant rack 6	no gall	leaf	1	5	E
+1346	resistant rack 6	no gall	leaf	1	5	F
+632	resistant rack 6	no gall	leaf	1	5	G
+320	resistant rack 6	no gall	leaf	1	5	H
+72	resistant rack 6	no gall	leaf	1	6	A
+708	resistant rack 6	no gall	leaf	1	6	B
+478	resistant rack 6	no gall	leaf	1	6	C
+248	resistant rack 6	no gall	leaf	1	6	D
+156	resistant rack 6	no gall	leaf	1	6	E
+227	resistant rack 6	no gall	leaf	1	6	F
+43	resistant rack 6	no gall	leaf	1	6	G
+783	resistant rack 6	no gall	leaf	1	6	H
+381	resistant rack 6	no gall	leaf	1	7	A
+1082	resistant rack 6	no gall	leaf	1	7	B
+154	resistant rack 6	no gall	leaf	1	7	C
+346	resistant rack 6	no gall	leaf	1	7	D
+452	resistant rack 6	no gall	leaf	1	7	E
+203	resistant rack 6	no gall	leaf	1	7	F
+181	resistant rack 6	no gall	leaf	1	7	G
+213	resistant rack 6	no gall	leaf	1	7	H
+448	resistant rack 6	no gall	leaf	1	8	A
+524	resistant rack 6	no gall	leaf	1	8	B
+328	resistant rack 6	no gall	leaf	1	8	C
+1266	resistant rack 6	no gall	leaf	1	8	D
+42	resistant rack 6	no gall	leaf	1	8	E
+479	resistant rack 6	no gall	leaf	1	8	F
+544	resistant rack 6	no gall	leaf	1	8	G
+108	resistant rack 6	no gall	leaf	1	8	H
+314	resistant rack 6	no gall	leaf	1	9	A
+26	resistant rack 6	no gall	leaf	1	9	B
+112	resistant rack 6	no gall	leaf	1	9	C
+1400	resistant rack 6	no gall	leaf	1	9	D
+755	resistant rack 6	no gall	leaf	1	9	E
+390	resistant rack 6	no gall	leaf	1	9	F
+481	resistant rack 6	no gall	leaf	1	9	G
+1154	resistant rack 6	no gall	leaf	1	9	H
+444	resistant rack 6	no gall	leaf	1	10	A
+387	resistant rack 6	no gall	leaf	1	10	B
+1237	resistant rack 6	no gall	leaf	1	10	C
+1369	resistant rack 6	no gall	leaf	1	10	D
+69	resistant rack 6	no gall	leaf	1	10	E
+1294	resistant rack 6	no gall	leaf	1	10	F
+534	resistant rack 7	no gall	leaf	1	10	G
+505	resistant rack 7	no gall	leaf	1	10	H
+289	resistant rack 7	no gall	leaf	1	11	A
+251	resistant rack 7	no gall	leaf	1	11	B
+385	resistant rack 7	no gall	leaf	1	11	C
+245	resistant rack 7	no gall	leaf	1	11	D
+1239	resistant rack 7	no gall	leaf	1	11	E
+104	resistant rack 7	no gall	leaf	1	11	F
+419	resistant rack 7	no gall	leaf	1	11	G
+192	resistant rack 7	no gall	leaf	1	11	H
+1243	resistant rack 7	no gall	leaf	1	12	A
+416	resistant rack 7	no gall	leaf	1	12	B
+244	resistant rack 7	no gall	leaf	1	12	C
+24	resistant rack 7	no gall	leaf	1	12	D
+283	resistant rack 7	no gall	leaf	1	12	E
+521	resistant rack 7	no gall	leaf	1	12	F
+613	resistant rack 7	no gall	leaf	1	12	G
+276	resistant rack 7	no gall	leaf	1	12	H
+424	resistant rack 7	no gall	leaf	2	1	A
+1325	resistant rack 7	no gall	leaf	2	1	B
+565	resistant rack 7	no gall	leaf	2	1	C
+327	resistant rack 7	no gall	leaf	2	1	D
+521	resistant rack 7	no gall	leaf	2	1	E
+999	resistant rack 7	no gall	leaf	2	1	F
+301	resistant rack 7	no gall	leaf	2	1	G
+1345	resistant rack 7	no gall	leaf	2	1	H
+383	resistant rack 7	no gall	leaf	2	2	A
+352	resistant rack 7	no gall	leaf	2	2	B
+403	resistant rack 7	no gall	leaf	2	2	C
+327	resistant rack 7	no gall	leaf	2	2	D
+543	resistant rack 7	no gall	leaf	2	2	E
+825	resistant rack 7	no gall	leaf	2	2	F
+697	resistant rack 7	no gall	leaf	2	2	G
+187	resistant rack 7	no gall	leaf	2	2	H
+542	resistant rack 7	no gall	leaf	2	3	A
+51	resistant rack 7	no gall	leaf	2	3	B
+84	resistant rack 7	no gall	leaf	2	3	C
+475	resistant rack 7	no gall	leaf	2	3	D
+218	resistant rack 7	no gall	leaf	2	3	E
+225	resistant rack 7	no gall	leaf	2	3	F
+434	resistant rack 7	no gall	leaf	2	3	G
+486	resistant rack 7	no gall	leaf	2	3	H
+412	resistant rack 7	no gall	leaf	2	4	A
+410	resistant rack 7	no gall	leaf	2	4	B
+311	resistant rack 7	no gall	leaf	2	4	C
+1378	resistant rack 7	no gall	leaf	2	4	D
+985	resistant rack 7	no gall	leaf	2	4	E
+554	resistant rack 7	no gall	leaf	2	4	F
+243	resistant rack 7	no gall	leaf	2	4	G
+343	resistant rack 7	no gall	leaf	2	4	H
+626	resistant rack 7	no gall	leaf	2	5	A
+804	resistant rack 7	no gall	leaf	2	5	B
+408	resistant rack 7	no gall	leaf	2	5	C
+282	resistant rack 7	no gall	leaf	2	5	D
+144	resistant rack 7	no gall	leaf	2	5	E
+209	resistant rack 7	no gall	leaf	2	5	F
+36	resistant rack 7	no gall	leaf	2	5	G
+379	resistant rack 7	no gall	leaf	2	5	H
+76	resistant rack 7	no gall	leaf	2	6	A
+389	resistant rack 7	no gall	leaf	2	6	B
+155	resistant rack 7	no gall	leaf	2	6	C
+233	resistant rack 7	no gall	leaf	2	6	D
+1236	resistant rack 7	no gall	leaf	2	6	E
+1150	resistant rack 7	no gall	leaf	2	6	F
+161	resistant rack 7	no gall	leaf	2	6	G
+402	resistant rack 7	no gall	leaf	2	6	H
+10-5 X 4-6664 tree1	freeze dried in -20C	NA	leaf	2	7	A
+10-5 X 4-6664 tree2	freeze dried in -20C	NA	leaf	2	7	B
+10-5 X 4-6664 tree3	freeze dried in -20C	NA	leaf	2	7	C
+10-5 X 4-6664 tree4	freeze dried in -20C	NA	leaf	2	7	D
+10-5 X 4-6664 tree5	freeze dried in -20C	NA	leaf	2	7	E
+10-5 X 4-6664 tree6	freeze dried in -20C	NA	leaf	2	7	F
+20-1010	freeze dried in -20C	NA	leaf	2	7	G
+BLANK	BLANK	BLANK	BLANK	2	7	H
+BLANK	BLANK	BLANK	BLANK	2	8	A
+BLANK	BLANK	BLANK	BLANK	2	8	B
+BLANK	BLANK	BLANK	BLANK	2	8	C
+BLANK	BLANK	BLANK	BLANK	2	8	D
+BLANK	BLANK	BLANK	BLANK	2	8	E
+BLANK	BLANK	BLANK	BLANK	2	8	F
+BLANK	BLANK	BLANK	BLANK	2	8	G
+BLANK	BLANK	BLANK	BLANK	2	8	H
+BLANK	BLANK	BLANK	BLANK	2	9	A
+BLANK	BLANK	BLANK	BLANK	2	9	B
+BLANK	BLANK	BLANK	BLANK	2	9	C
+BLANK	BLANK	BLANK	BLANK	2	9	D
+BLANK	BLANK	BLANK	BLANK	2	9	E
+BLANK	BLANK	BLANK	BLANK	2	9	F
+BLANK	BLANK	BLANK	BLANK	2	9	G
+BLANK	BLANK	BLANK	BLANK	2	9	H
+BLANK	BLANK	BLANK	BLANK	2	10	A
+BLANK	BLANK	BLANK	BLANK	2	10	B
+BLANK	BLANK	BLANK	BLANK	2	10	C
+BLANK	BLANK	BLANK	BLANK	2	10	D
+BLANK	BLANK	BLANK	BLANK	2	10	E
+BLANK	BLANK	BLANK	BLANK	2	10	F
+BLANK	BLANK	BLANK	BLANK	2	10	G
+BLANK	BLANK	BLANK	BLANK	2	10	H
+BLANK	BLANK	BLANK	BLANK	2	11	A
+BLANK	BLANK	BLANK	BLANK	2	11	B
+BLANK	BLANK	BLANK	BLANK	2	11	C
+BLANK	BLANK	BLANK	BLANK	2	11	D
+BLANK	BLANK	BLANK	BLANK	2	11	E
+BLANK	BLANK	BLANK	BLANK	2	11	F
+BLANK	BLANK	BLANK	BLANK	2	11	G
+BLANK	BLANK	BLANK	BLANK	2	11	H
+BLANK	BLANK	BLANK	BLANK	2	12	A
+BLANK	BLANK	BLANK	BLANK	2	12	B
+BLANK	BLANK	BLANK	BLANK	2	12	C
+BLANK	BLANK	BLANK	BLANK	2	12	D
+BLANK	BLANK	BLANK	BLANK	2	12	E
+BLANK	BLANK	BLANK	BLANK	2	12	F
+BLANK	BLANK	BLANK	BLANK	2	12	G
+BLANK	BLANK	BLANK	BLANK	2	12	H
+14	freeze dried in -20C	X	leaf	3	1	A
+37	freeze dried in -20C	X	leaf	3	1	B
+38	freeze dried in -20C	X	leaf	3	1	C
+46	freeze dried in -20C	X	leaf	3	1	D
+47	freeze dried in -20C	X	leaf	3	1	E
+54	freeze dried in -20C	X	leaf	3	1	F
+88	freeze dried in -20C	X	leaf	3	1	G
+101	freeze dried in -20C	X	leaf	3	1	H
+103	freeze dried in -20C	X	leaf	3	2	A
+109	freeze dried in -20C	X	leaf	3	2	B
+111	freeze dried in -20C	X	leaf	3	2	C
+113	freeze dried in -20C	X	leaf	3	2	D
+114	freeze dried in -20C	X	leaf	3	2	E
+116	freeze dried in -20C	X	leaf	3	2	F
+122	freeze dried in -20C	X	leaf	3	2	G
+123	freeze dried in -20C	X	leaf	3	2	H
+140	freeze dried in -20C	X	leaf	3	3	A
+148	freeze dried in -20C	X	leaf	3	3	B
+163	freeze dried in -20C	X	leaf	3	3	C
+164	freeze dried in -20C	X	leaf	3	3	D
+165	freeze dried in -20C	X	leaf	3	3	E
+166	freeze dried in -20C	X	leaf	3	3	F
+178	freeze dried in -20C	X	leaf	3	3	G
+189	freeze dried in -20C	X	leaf	3	3	H
+200	freeze dried in -20C	X	leaf	3	4	A
+220	freeze dried in -20C	X	leaf	3	4	B
+224	freeze dried in -20C	X	leaf	3	4	C
+237	freeze dried in -20C	X	leaf	3	4	D
+257	freeze dried in -20C	X	leaf	3	4	E
+263	freeze dried in -20C	X	leaf	3	4	F
+269	freeze dried in -20C	X	leaf	3	4	G
+284	freeze dried in -20C	X	leaf	3	4	H
+296	freeze dried in -20C	X	leaf	3	5	A
+298	freeze dried in -20C	X	leaf	3	5	B
+304	freeze dried in -20C	X	leaf	3	5	C
+317	freeze dried in -20C	X	leaf	3	5	D
+319	freeze dried in -20C	X	leaf	3	5	E
+335	freeze dried in -20C	X	leaf	3	5	F
+337	freeze dried in -20C	X	leaf	3	5	G
+338	freeze dried in -20C	X	leaf	3	5	H
+350	freeze dried in -20C	X	leaf	3	6	A
+363	freeze dried in -20C	X	leaf	3	6	B
+367	freeze dried in -20C	X	leaf	3	6	C
+368	freeze dried in -20C	X	leaf	3	6	D
+376	freeze dried in -20C	X	leaf	3	6	E
+377	freeze dried in -20C	X	leaf	3	6	F
+382	freeze dried in -20C	X	leaf	3	6	G
+384	freeze dried in -20C	X	leaf	3	6	H
+388	freeze dried in -20C	X	leaf	3	7	A
+393	freeze dried in -20C	X	leaf	3	7	B
+399	freeze dried in -20C	X	leaf	3	7	C
+400	freeze dried in -20C	X	leaf	3	7	D
+405	freeze dried in -20C	X	leaf	3	7	E
+423	freeze dried in -20C	X	leaf	3	7	F
+427	freeze dried in -20C	X	leaf	3	7	G
+428	freeze dried in -20C	X	leaf	3	7	H
+429	freeze dried in -20C	X	leaf	3	8	A
+449	freeze dried in -20C	X	leaf	3	8	B
+450	freeze dried in -20C	X	leaf	3	8	C
+456	freeze dried in -20C	X	leaf	3	8	D
+463	freeze dried in -20C	X	leaf	3	8	E
+466	freeze dried in -20C	X	leaf	3	8	F
+483	freeze dried in -20C	X	leaf	3	8	G
+488	freeze dried in -20C	X	leaf	3	8	H
+489	freeze dried in -20C	X	leaf	3	9	A
+493	freeze dried in -20C	X	leaf	3	9	B
+522	freeze dried in -20C	X	leaf	3	9	C
+527	freeze dried in -20C	X	leaf	3	9	D
+531	freeze dried in -20C	X	leaf	3	9	E
+532	freeze dried in -20C	X	leaf	3	9	F
+545	freeze dried in -20C	X	leaf	3	9	G
+550	freeze dried in -20C	X	leaf	3	9	H
+569	freeze dried in -20C	X	leaf	3	10	A
+572	freeze dried in -20C	X	leaf	3	10	B
+579	freeze dried in -20C	X	leaf	3	10	C
+580	freeze dried in -20C	X	leaf	3	10	D
+581	freeze dried in -20C	X	leaf	3	10	E
+587	freeze dried in -20C	X	leaf	3	10	F
+589	freeze dried in -20C	X	leaf	3	10	G
+592	freeze dried in -20C	X	leaf	3	10	H
+615	freeze dried in -20C	X	leaf	3	11	A
+623	freeze dried in -20C	X	leaf	3	11	B
+656	freeze dried in -20C	X	leaf	3	11	C
+674	freeze dried in -20C	X	leaf	3	11	D
+698	freeze dried in -20C	X	leaf	3	11	E
+720	freeze dried in -20C	X	leaf	3	11	F
+721	freeze dried in -20C	X	leaf	3	11	G
+723	freeze dried in -20C	X	leaf	3	11	H
+724	freeze dried in -20C	X	leaf	3	12	A
+726	freeze dried in -20C	X	leaf	3	12	B
+738	freeze dried in -20C	X	leaf	3	12	C
+740	freeze dried in -20C	X	leaf	3	12	D
+747	freeze dried in -20C	X	leaf	3	12	E
+753	freeze dried in -20C	X	leaf	3	12	F
+791	freeze dried in -20C	X	leaf	3	12	G
+813	freeze dried in -20C	X	leaf	3	12	H
+843	freeze dried in -20C	X	leaf	4	1	A
+872	freeze dried in -20C	X	leaf	4	1	B
+949	freeze dried in -20C	X	leaf	4	1	C
+960	freeze dried in -20C	X	leaf	4	1	D
+982	freeze dried in -20C	X	leaf	4	1	E
+984	freeze dried in -20C	X	leaf	4	1	F
+1010	freeze dried in -20C	X	leaf	4	1	G
+1014	freeze dried in -20C	X	leaf	4	1	H
+1017	freeze dried in -20C	X	leaf	4	2	A
+1018	freeze dried in -20C	X	leaf	4	2	B
+1019	freeze dried in -20C	X	leaf	4	2	C
+1026	freeze dried in -20C	X	leaf	4	2	D
+1027	freeze dried in -20C	X	leaf	4	2	E
+1056	freeze dried in -20C	X	leaf	4	2	F
+1058	freeze dried in -20C	X	leaf	4	2	G
+1067	freeze dried in -20C	X	leaf	4	2	H
+1075	freeze dried in -20C	X	leaf	4	3	A
+1088	freeze dried in -20C	X	leaf	4	3	B
+1089	freeze dried in -20C	X	leaf	4	3	C
+1104	freeze dried in -20C	X	leaf	4	3	D
+1115	freeze dried in -20C	X	leaf	4	3	E
+1139	freeze dried in -20C	X	leaf	4	3	F
+1140	freeze dried in -20C	X	leaf	4	3	G
+1168	freeze dried in -20C	X	leaf	4	3	H
+1173	freeze dried in -20C	X	leaf	4	4	A
+1224	freeze dried in -20C	X	leaf	4	4	B
+1238	freeze dried in -20C	X	leaf	4	4	C
+1260	freeze dried in -20C	X	leaf	4	4	D
+1274	freeze dried in -20C	X	leaf	4	4	E
+1277	freeze dried in -20C	X	leaf	4	4	F
+1284	freeze dried in -20C	X	leaf	4	4	G
+1288	freeze dried in -20C	X	leaf	4	4	H
+1297	freeze dried in -20C	X	leaf	4	5	A
+1300	freeze dried in -20C	X	leaf	4	5	B
+1311	freeze dried in -20C	X	leaf	4	5	C
+1326	freeze dried in -20C	X	leaf	4	5	D
+1335	freeze dried in -20C	X	leaf	4	5	E
+1338	freeze dried in -20C	X	leaf	4	5	F
+1341	freeze dried in -20C	X	leaf	4	5	G
+1388	freeze dried in -20C	X	leaf	4	5	H
+1397	freeze dried in -20C	X	leaf	4	6	A
+1399	freeze dried in -20C	X	leaf	4	6	B
+1408	freeze dried in -20C	X	leaf	4	6	C
+1409	freeze dried in -20C	X	leaf	4	6	D
+1414	freeze dried in -20C	X	leaf	4	6	E
+1415	freeze dried in -20C	X	leaf	4	6	F
+1418	freeze dried in -20C	X	leaf	4	6	G
+1426	freeze dried in -20C	X	leaf	4	6	H
+1440	freeze dried in -20C	X	leaf	4	7	A
+1450	freeze dried in -20C	X	leaf	4	7	B
+1458	freeze dried in -20C	X	leaf	4	7	C
+1504	freeze dried in -20C	X	leaf	4	7	D
+BLANK	BLANK	BLANK	BLANK	4	7	E
+BLANK	BLANK	BLANK	BLANK	4	7	F
+BLANK	BLANK	BLANK	BLANK	4	7	G
+BLANK	BLANK	BLANK	BLANK	4	7	H
+CL04	DNA -20C	RNAseq exp	leaf	4	8	A
+CL05	DNA -20C	RNAseq exp	leaf	4	8	B
+PD18	DNA -20C	RNAseq exp	leaf	4	8	C
+PD35	DNA -20C	RNAseq exp	leaf	4	8	D
+10-5_1	seed sent from Cumbie/Arbogen		meg	4	8	E
+10-5_2	seed sent from Cumbie/Arbogen		meg	4	8	F
+10-5_3	seed sent from Cumbie/Arbogen		meg	4	8	G
+10-5_4	seed sent from Cumbie/Arbogen		meg	4	8	H
+10-5_5	seed sent from Cumbie/Arbogen		meg	4	9	A
+10-5_6	seed sent from Cumbie/Arbogen		meg	4	9	B
+10-5_7	seed sent from Cumbie/Arbogen		meg	4	9	C
+10-5_8	seed sent from Cumbie/Arbogen		meg	4	9	D
+10-5_9	seed sent from Cumbie/Arbogen		meg	4	9	E
+10-5_10	seed sent from Cumbie/Arbogen		meg	4	9	F
+10-5_11	seed sent from Cumbie/Arbogen		meg	4	9	G
+10-5_12	seed sent from Cumbie/Arbogen		meg	4	9	H
+10-5_13	seed sent from Cumbie/Arbogen		meg	4	10	A
+10-5_14	seed sent from Cumbie/Arbogen		meg	4	10	B
+10-5_15	seed sent from Cumbie/Arbogen		meg	4	10	C
+10-5_16	seed sent from Cumbie/Arbogen		meg	4	10	D
+10-5_17	seed sent from Cumbie/Arbogen		meg	4	10	E
+10-5_18	seed sent from Cumbie/Arbogen		meg	4	10	F
+10-5_19	seed sent from Cumbie/Arbogen		meg	4	10	G
+10-5_20	seed sent from Cumbie/Arbogen		meg	4	10	H
+10-5_21	seed sent from Cumbie/Arbogen		meg	4	11	A
+10-5_22	seed sent from Cumbie/Arbogen		meg	4	11	B
+10-5_23	seed sent from Cumbie/Arbogen		meg	4	11	C
+10-5_24	seed sent from Cumbie/Arbogen		meg	4	11	D
+10-5_25	seed sent from Cumbie/Arbogen		meg	4	11	E
+10-5_26	seed sent from Cumbie/Arbogen		meg	4	11	F
+10-5_27	seed sent from Cumbie/Arbogen		meg	4	11	G
+10-5_28	seed sent from Cumbie/Arbogen		meg	4	11	H
+10-5_29	seed sent from Cumbie/Arbogen		meg	4	12	A
+10-5_30	seed sent from Cumbie/Arbogen		meg	4	12	B
+10-5_31	seed sent from Cumbie/Arbogen		meg	4	12	C
+10-5_32	seed sent from Cumbie/Arbogen		meg	4	12	D

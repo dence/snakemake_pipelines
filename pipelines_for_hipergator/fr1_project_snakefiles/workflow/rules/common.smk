@@ -1,5 +1,6 @@
 from snakemake.utils import validate
 import pandas as pd
+import os
 
 
 # this container defines the underlying OS for each job when using the workflow
@@ -46,6 +47,21 @@ wildcard_constraints:
 
 
 ####### helpers ###########
+
+def make_sample_type_list_file(list_of_sample_types):
+    list_of_matched_samples = []
+    for sample_type in list_of_sample_types:
+        list_of_matched_samples.extend(get_sample_subset(sample_type))
+    list_filename = "_".join(list_of_sample_types)  + ".list.txt"
+    if not os.path.exists("results/lists"):
+        os.makedirs("./results/lists/")
+
+    list_file = open("results/lists/" + list_filename,'w')
+    for matched_sample in list_of_matched_samples:
+        list_file.write(matched_sample + "\n")
+    list_file.close
+    return list_filename
+
 
 def is_single_end(sample, unit):
     """Determine whether unit is single-end."""
@@ -96,8 +112,6 @@ def get_bioc_pkg_path(wildcards):
 
 def is_activated(config_element):
     return config_element['activate'] in {"true","True"}
-
-import os
 
 def get_bam_list(sample_type_list):
     bam_list = []

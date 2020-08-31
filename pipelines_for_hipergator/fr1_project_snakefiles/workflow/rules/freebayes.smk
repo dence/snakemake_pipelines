@@ -15,7 +15,8 @@ rule freebayes_haploid:
     threads:
         10
     shell:
-        "unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.2; freebayes {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        #"unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
 
 rule freebayes_diploid:
     input:
@@ -33,4 +34,5 @@ rule freebayes_diploid:
     threads:
         10
     shell:
-        "unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        "unset TMPDIR; module load freebayes/1.3.2; freebayes {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
+        #"unset TMPDIR; module load freebayes/1.3.1; freebayes-parallel /blue/kirst/d.ence/ref_genomes/loblolly_pine/V1_1/ref_for_Fr1_probes/ptaeda.v1.01.masked.and_elite_RNAseq.probes_bed_scaffolds.fasta.regions {threads} {params.settings} {params.targets}  --bam-list {input.bam_list} -f {input.ref} --vcf {output}  &> {log}"
